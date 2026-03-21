@@ -1,0 +1,17 @@
+baseURL = "https://zentinelle.ai/"
+languageCode = "en-us"
+title = "Zentinelle — Runtime governance for AI agents"
+
+[params]
+  description = "Zentinelle sits between your AI agents and their LLM providers — enforcing policies, logging every action, and surfacing a real-time compliance dashboard. No agent code changes required. Open source, MIT licensed."
+  github = "https://github.com/calliopeai/zentinelle"
+  sdk = "https://github.com/calliopeai/zentinelle-sdk"
+  docs = "https://docs.zentinelle.ai"
+
+[build]
+  writeStats = true
+
+[minify]
+  disableCSS = false
+  disableHTML = false
+  disableJS = false

@@ -3,11 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Zentinelle — Runtime governance for AI agents</title>
-  <meta name="description" content="Zentinelle sits between your AI agents and their LLM providers — enforcing policies, logging every action, and surfacing a real-time compliance dashboard. No agent code changes required.">
+  <title>{{ .Site.Title }}</title>
+  <meta name="description" content="{{ .Site.Params.description }}">
   <meta name="keywords" content="AI agent governance, AI compliance, Claude Code governance, Codex governance, LLM proxy, AI policy enforcement, AI observability, SOC2 AI, HIPAA AI agents, GDPR AI compliance, EU AI Act, open source AI governance, runtime AI governance, AI audit logging">
-  <meta property="og:title" content="Zentinelle — Runtime governance for AI agents">
-  <meta property="og:description" content="Policy enforcement, audit logging, and real-time compliance dashboards for AI agents. No agent code changes required. Open source, MIT licensed.">
+  <meta property="og:title" content="{{ .Site.Title }}">
+  <meta property="og:description" content="{{ .Site.Params.description }}">
+  <meta property="og:url" content="{{ .Site.BaseURL }}">
+  <link rel="canonical" href="{{ .Site.BaseURL }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
