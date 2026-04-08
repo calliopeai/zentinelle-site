@@ -6,6 +6,7 @@ html {
 
 [data-card-inner] {
   transition: opacity 0.35s ease-out, transform 0.35s ease-out, filter 0.35s ease-out;
+  overflow: hidden;
 }
 
 :root {
@@ -129,4 +130,37 @@ a, button, [role="button"] {
 @keyframes sq-halo {
   0%, 100% { opacity: 0.06; transform: scale(1); }
   50%       { opacity: 0.12; transform: scale(1.08); }
+}
+
+/* ── Footer form input improvements ── */
+footer input[type="text"],
+footer input[type="email"],
+footer textarea {
+  border-color: rgba(13, 13, 13, 0.25) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+footer input[type="text"]:focus,
+footer input[type="email"]:focus,
+footer textarea:focus {
+  border-color: rgba(13, 13, 13, 0.55) !important;
+  box-shadow: 0 0 0 3px rgba(13, 13, 13, 0.08), 0 1px 2px rgba(0, 0, 0, 0.05);
+  outline: none;
+}
+footer input::placeholder,
+footer textarea::placeholder {
+  color: rgba(13, 13, 13, 0.4) !important;
+}
+
+/* ── Contact modal input styles ── */
+.modal-input {
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+.modal-input:focus {
+  border-color: rgba(55, 239, 237, 0.4) !important;
+  box-shadow: 0 0 0 3px rgba(55, 239, 237, 0.08);
+  outline: none;
+}
+.modal-input::placeholder {
+  color: rgba(255, 255, 255, 0.3) !important;
 }
