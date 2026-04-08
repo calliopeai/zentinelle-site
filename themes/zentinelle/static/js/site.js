@@ -1,5 +1,5 @@
 /* site.js -- vanilla JS interactivity for zentinelle.ai
-   Replaces the React components from the Next.js source.
+   Extracted from the React/Next.js TSX sources.
    No build step required. */
 
 (function () {
@@ -7,381 +7,368 @@
 
   /* ================================================================
      A) ParticleField  -- canvas "Z" animation
+     Extracted from ParticleField.tsx
      ================================================================ */
   function initParticleField() {
     var canvas = document.querySelector('canvas[aria-hidden="true"]');
     if (!canvas) return;
-
     var ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
     var W = 560;
     var H = 540;
-    canvas.width = W;
-    canvas.height = H;
-
-    /* --- constants --- */
     var COUNT = 85;
     var CONNECT_DIST = 140;
     var TR = 55, TG = 239, TB = 237;
-    var ANCHOR_N = 13;
 
-    /* --- Z anchors --- */
-    function buildZAnchors(n) {
+    // ── Generate Z anchor points ────────────────────────────────────────
+    function buildZ(cx, cy, w, h, n) {
+      var x0 = cx - w / 2, x1 = cx + w / 2;
+      var y0 = cy - h / 2, y1 = cy + h / 2;
       var pts = [];
-      var margin = 120;
-      var top = 120;
-      var bot = H - 120;
-      var left = margin;
-      var right = W - margin;
-      var i;
 
-      /* top horizontal */
-      for (i = 0; i < n; i++) {
-        pts.push({ x: left + (right - left) * (i / (n - 1)), y: top });
+      // top line
+      for (var i = 0; i <= n; i++) pts.push([x0 + (x1 - x0) * (i / n), y0]);
+      // diagonal
+      for (var i = 1; i < n; i++) {
+        var t = i / n;
+        pts.push([x1 - (x1 - x0) * t, y0 + (y1 - y0) * t]);
       }
-      /* diagonal */
-      for (i = 0; i < n; i++) {
-        pts.push({
-          x: right - (right - left) * (i / (n - 1)),
-          y: top + (bot - top) * (i / (n - 1)),
-        });
-      }
-      /* bottom horizontal */
-      for (i = 0; i < n; i++) {
-        pts.push({ x: left + (right - left) * (i / (n - 1)), y: bot });
-      }
+      // bottom line
+      for (var i = 0; i <= n; i++) pts.push([x0 + (x1 - x0) * (i / n), y1]);
+
       return pts;
     }
 
-    var anchors = buildZAnchors(ANCHOR_N);
+    var Z_ANCHORS = buildZ(W / 2, H / 2, 210, 210, 13);
 
-    /* --- particles --- */
-    function makeParticle(isZ, anchorIdx) {
-      var ax = isZ ? anchors[anchorIdx].x : 0;
-      var ay = isZ ? anchors[anchorIdx].y : 0;
-      return {
-        x: isZ ? ax + (Math.random() - 0.5) * 60 : Math.random() * W,
-        y: isZ ? ay + (Math.random() - 0.5) * 60 : Math.random() * H,
-        vx: (Math.random() - 0.5) * 0.6,
-        vy: (Math.random() - 0.5) * 0.6,
-        r: isZ ? 2.2 + Math.random() * 1.2 : 1.2 + Math.random() * 1.0,
-        alpha: 0.25 + Math.random() * 0.5,
-        alphaDir: (Math.random() < 0.5 ? 1 : -1) * (0.003 + Math.random() * 0.004),
-        isZ: isZ,
-        anchorIdx: isZ ? anchorIdx : -1,
-        ax: ax,
-        ay: ay,
-        isNode: !isZ && Math.random() < 0.18,
-      };
+    // ── Mouse state ─────────────────────────────────────────────────
+    var mx = -999, my = -999;
+    var hovered = false;
+    var justExploded = false;
+
+    function onMouseEnter() {
+      hovered = true;
+      justExploded = true;
     }
-
-    var particles = [];
-    var bgCount = COUNT;
-    var i;
-    for (i = 0; i < bgCount; i++) {
-      particles.push(makeParticle(false, -1));
-    }
-    for (i = 0; i < anchors.length; i++) {
-      particles.push(makeParticle(true, i));
-    }
-
-    /* --- sparks --- */
-    var sparks = [];
-    var MAX_SPARKS = 12;
-
-    function spawnSpark() {
-      if (sparks.length >= MAX_SPARKS) return;
-      /* pick two connected Z particles */
-      var zParts = particles.filter(function (p) { return p.isZ; });
-      if (zParts.length < 2) return;
-      var a = zParts[Math.floor(Math.random() * zParts.length)];
-      var b;
-      var tries = 0;
-      do {
-        b = zParts[Math.floor(Math.random() * zParts.length)];
-        tries++;
-      } while (b === a && tries < 10);
-      if (b === a) return;
-      var dx = b.x - a.x;
-      var dy = b.y - a.y;
-      if (Math.sqrt(dx * dx + dy * dy) > CONNECT_DIST * 1.2) return;
-      sparks.push({ from: a, to: b, t: 0, speed: 0.012 + Math.random() * 0.018 });
-    }
-
-    /* --- mouse --- */
-    var mouse = { x: -1000, y: -1000, inside: false, firstHover: true };
-    var burst = null;
-
-    canvas.addEventListener("mouseenter", function () {
-      mouse.inside = true;
-      if (mouse.firstHover) {
-        mouse.firstHover = false;
-        burst = { x: mouse.x, y: mouse.y, t: 0 };
-      }
-    });
-    canvas.addEventListener("mouseleave", function () {
-      mouse.inside = false;
-    });
-    canvas.addEventListener("mousemove", function (e) {
+    function onMouseMove(e) {
       var rect = canvas.getBoundingClientRect();
-      mouse.x = ((e.clientX - rect.left) / rect.width) * W;
-      mouse.y = ((e.clientY - rect.top) / rect.height) * H;
-      if (!mouse.inside) {
-        mouse.inside = true;
-        if (mouse.firstHover) {
-          mouse.firstHover = false;
-          burst = { x: mouse.x, y: mouse.y, t: 0 };
-        }
-      }
-    });
+      mx = (e.clientX - rect.left) * (W / rect.width);
+      my = (e.clientY - rect.top) * (H / rect.height);
+    }
+    function onMouseLeave() {
+      hovered = false;
+      mx = -999; my = -999;
+    }
+    canvas.addEventListener("mouseenter", onMouseEnter);
+    canvas.addEventListener("mousemove", onMouseMove);
+    canvas.addEventListener("mouseleave", onMouseLeave);
 
-    /* --- animation loop --- */
-    var sparkTimer = 0;
-
-    function tick() {
-      ctx.clearRect(0, 0, W, H);
-
-      /* update particles */
-      for (var i = 0; i < particles.length; i++) {
-        var p = particles[i];
-
-        /* flicker alpha */
-        p.alpha += p.alphaDir;
-        if (p.alpha > 0.8 || p.alpha < 0.15) p.alphaDir *= -1;
-        p.alpha = Math.max(0.1, Math.min(0.85, p.alpha));
-
-        if (p.isZ) {
-          /* attract to anchor */
-          var dx = p.ax - p.x;
-          var dy = p.ay - p.y;
-          p.vx += dx * 0.008;
-          p.vy += dy * 0.008;
-
-          /* mouse repulsion */
-          if (mouse.inside) {
-            var mdx = p.x - mouse.x;
-            var mdy = p.y - mouse.y;
-            var md = Math.sqrt(mdx * mdx + mdy * mdy);
-            if (md < 100 && md > 0) {
-              var force = (100 - md) / 100 * 3;
-              p.vx += (mdx / md) * force;
-              p.vy += (mdy / md) * force;
-            }
-          }
-
-          p.vx *= 0.92;
-          p.vy *= 0.92;
-        } else {
-          /* background drift */
-          p.vx *= 0.99;
-          p.vy *= 0.99;
-          if (p.x < 0 || p.x > W) p.vx *= -1;
-          if (p.y < 0 || p.y > H) p.vy *= -1;
-        }
-
-        p.x += p.vx;
-        p.y += p.vy;
-
-        /* wrap bg particles */
-        if (!p.isZ) {
-          if (p.x < -10) p.x = W + 10;
-          if (p.x > W + 10) p.x = -10;
-          if (p.y < -10) p.y = H + 10;
-          if (p.y > H + 10) p.y = -10;
-        }
-      }
-
-      /* burst effect */
-      if (burst) {
-        burst.t += 0.03;
-        if (burst.t < 1) {
-          var burstR = burst.t * 120;
-          ctx.beginPath();
-          ctx.arc(burst.x, burst.y, burstR, 0, Math.PI * 2);
-          ctx.strokeStyle = "rgba(" + TR + "," + TG + "," + TB + "," + (0.4 * (1 - burst.t)) + ")";
-          ctx.lineWidth = 2 * (1 - burst.t);
-          ctx.stroke();
-          /* push nearby particles */
-          for (i = 0; i < particles.length; i++) {
-            var pp = particles[i];
-            var bx = pp.x - burst.x;
-            var by = pp.y - burst.y;
-            var bd = Math.sqrt(bx * bx + by * by);
-            if (bd < burstR + 20 && bd > burstR - 20 && bd > 0) {
-              pp.vx += (bx / bd) * 2.5 * (1 - burst.t);
-              pp.vy += (by / bd) * 2.5 * (1 - burst.t);
-            }
-          }
-        } else {
-          burst = null;
-        }
-      }
-
-      /* draw connections */
-      for (i = 0; i < particles.length; i++) {
-        for (var j = i + 1; j < particles.length; j++) {
-          var a = particles[i];
-          var b = particles[j];
-          /* only connect: Z-Z, Z-bg(node), or bg(node)-bg(node) */
-          if (!a.isZ && !a.isNode && !b.isZ && !b.isNode) continue;
-          var cdx = a.x - b.x;
-          var cdy = a.y - b.y;
-          var cd = Math.sqrt(cdx * cdx + cdy * cdy);
-          if (cd < CONNECT_DIST) {
-            var lineAlpha = (1 - cd / CONNECT_DIST) * 0.3;
-            if (a.isZ && b.isZ) lineAlpha *= 1.6;
-            ctx.beginPath();
-            ctx.moveTo(a.x, a.y);
-            ctx.lineTo(b.x, b.y);
-            ctx.strokeStyle = "rgba(" + TR + "," + TG + "," + TB + "," + lineAlpha + ")";
-            ctx.lineWidth = a.isZ && b.isZ ? 1.0 : 0.5;
-            ctx.stroke();
-          }
-        }
-      }
-
-      /* draw sparks */
-      sparkTimer++;
-      if (sparkTimer % 20 === 0) spawnSpark();
-      for (i = sparks.length - 1; i >= 0; i--) {
-        var s = sparks[i];
-        s.t += s.speed;
-        if (s.t >= 1) { sparks.splice(i, 1); continue; }
-        var sx = s.from.x + (s.to.x - s.from.x) * s.t;
-        var sy = s.from.y + (s.to.y - s.from.y) * s.t;
-        var sa = Math.sin(s.t * Math.PI);
-        ctx.beginPath();
-        ctx.arc(sx, sy, 1.8, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(255,255,255," + (sa * 0.9) + ")";
-        ctx.fill();
-        /* glow */
-        ctx.beginPath();
-        ctx.arc(sx, sy, 5, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(" + TR + "," + TG + "," + TB + "," + (sa * 0.25) + ")";
-        ctx.fill();
-      }
-
-      /* draw particles */
-      for (i = 0; i < particles.length; i++) {
-        var p = particles[i];
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        if (p.isZ) {
-          ctx.fillStyle = "rgba(" + TR + "," + TG + "," + TB + "," + p.alpha + ")";
-        } else if (p.isNode) {
-          ctx.fillStyle = "rgba(" + TR + "," + TG + "," + TB + "," + (p.alpha * 0.6) + ")";
-        } else {
-          ctx.fillStyle = "rgba(255,255,255," + (p.alpha * 0.4) + ")";
-        }
-        ctx.fill();
-
-        /* glow on Z particles */
-        if (p.isZ) {
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.r * 3, 0, Math.PI * 2);
-          ctx.fillStyle = "rgba(" + TR + "," + TG + "," + TB + "," + (p.alpha * 0.1) + ")";
-          ctx.fill();
-        }
-      }
-
-      requestAnimationFrame(tick);
+    // ── Background particles ────────────────────────────────────────
+    var pts = [];
+    for (var _i = 0; _i < COUNT; _i++) {
+      var isNode = Math.random() < 0.14;
+      pts.push({
+        x: Math.random() * W, y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.35, vy: (Math.random() - 0.5) * 0.35,
+        size: isNode ? 2.5 + Math.random() * 2.5 : 0.8 + Math.random() * 1.4,
+        baseAlpha: isNode ? 0.65 + Math.random() * 0.35 : 0.15 + Math.random() * 0.45,
+        alpha: 0, isNode: isNode,
+        flickerPhase: Math.random() * Math.PI * 2,
+        flickerSpeed: isNode ? 0.8 + Math.random() * 1.4 : 0.3 + Math.random() * 0.8,
+      });
     }
 
-    requestAnimationFrame(tick);
+    // ── Z particles (one per anchor) ────────────────────────────────
+    var zpts = [];
+    for (var _i = 0; _i < Z_ANCHORS.length; _i++) {
+      var tx = Z_ANCHORS[_i][0], ty = Z_ANCHORS[_i][1];
+      zpts.push({
+        x: tx + (Math.random() - 0.5) * 60,
+        y: ty + (Math.random() - 0.5) * 60,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5,
+        tx: tx, ty: ty,
+        size: 1.6 + Math.random() * 1.4,
+        alpha: 0,
+        flickerPhase: Math.random() * Math.PI * 2,
+        flickerSpeed: 1.0 + Math.random() * 1.8,
+      });
+    }
+
+    var sparks = [];
+    var time = 0;
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      time += 0.018;
+
+      // ── Update background particles ───────────────────────────────
+      for (var i = 0; i < pts.length; i++) {
+        var p = pts[i];
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < 0 || p.x > W) { p.vx *= -1; p.x = Math.max(0, Math.min(W, p.x)); }
+        if (p.y < 0 || p.y > H) { p.vy *= -1; p.y = Math.max(0, Math.min(H, p.y)); }
+        var flicker = Math.sin(time * p.flickerSpeed + p.flickerPhase);
+        p.alpha = Math.max(0.04, Math.min(1, p.baseAlpha + flicker * (p.isNode ? 0.28 : 0.08)));
+      }
+
+      // ── Explosion burst on first hover frame ──────────────────────
+      if (justExploded) {
+        justExploded = false;
+        for (var i = 0; i < zpts.length; i++) {
+          var p = zpts[i];
+          var dx = p.x - W / 2, dy = p.y - H / 2;
+          var len = Math.sqrt(dx * dx + dy * dy) || 1;
+          p.vx += (dx / len) * 10 + (Math.random() - 0.5) * 6;
+          p.vy += (dy / len) * 10 + (Math.random() - 0.5) * 6;
+        }
+      }
+
+      // ── Update Z particles (attracted to anchor) ──────────────────
+      for (var i = 0; i < zpts.length; i++) {
+        var p = zpts[i];
+        // Attraction: weaker when hovered so particles stay scattered
+        var pull = hovered ? 0.001 : 0.004;
+        p.vx += (p.tx - p.x) * pull;
+        p.vy += (p.ty - p.y) * pull;
+
+        // Mouse repulsion
+        if (hovered) {
+          var dx = p.x - mx, dy = p.y - my;
+          var dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 110 && dist > 0) {
+            var force = (1 - dist / 110) * 4.5;
+            p.vx += (dx / dist) * force;
+            p.vy += (dy / dist) * force;
+          }
+        }
+
+        p.vx *= 0.92;
+        p.vy *= 0.92;
+        p.x += p.vx; p.y += p.vy;
+        var flicker = 0.5 + 0.5 * Math.sin(time * p.flickerSpeed + p.flickerPhase);
+        p.alpha = 0.55 + flicker * 0.45;
+      }
+
+      // ── Spawn sparks along Z edges ────────────────────────────────
+      if (Math.random() < 0.08) {
+        var i = Math.floor(Math.random() * zpts.length);
+        var j = (i + 1) % zpts.length;
+        var a = zpts[i], b = zpts[j];
+        var dx = b.x - a.x, dy = b.y - a.y;
+        if (Math.sqrt(dx * dx + dy * dy) < 60) {
+          sparks.push({ ax: a.x, ay: a.y, bx: b.x, by: b.y, t: 0, speed: 0.022 + Math.random() * 0.03, alpha: 1, life: 55 });
+        }
+      }
+      // Sparks between background nodes too
+      if (Math.random() < 0.04) {
+        var i = Math.floor(Math.random() * pts.length);
+        var a = pts[i];
+        if (a.isNode) {
+          for (var j = 0; j < pts.length; j++) {
+            if (j === i) continue;
+            var b = pts[j];
+            var dx = b.x - a.x, dy = b.y - a.y;
+            if (Math.sqrt(dx * dx + dy * dy) < CONNECT_DIST) {
+              sparks.push({ ax: a.x, ay: a.y, bx: b.x, by: b.y, t: 0, speed: 0.018 + Math.random() * 0.024, alpha: 0.85, life: 60 });
+              break;
+            }
+          }
+        }
+      }
+
+      // ── Draw background edges ─────────────────────────────────────
+      for (var i = 0; i < pts.length; i++) {
+        for (var j = i + 1; j < pts.length; j++) {
+          var a = pts[i], b = pts[j];
+          var dx = a.x - b.x, dy = a.y - b.y;
+          var dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist >= CONNECT_DIST) continue;
+          var prox = 1 - dist / CONNECT_DIST;
+          var boost = (a.isNode || b.isNode) ? 3.5 : 1;
+          var la = Math.min(0.55, prox * prox * 0.28 * boost * Math.min(a.alpha, b.alpha) * 2.5);
+          ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
+          ctx.strokeStyle = "rgba(" + TR + "," + TG + "," + TB + "," + la + ")";
+          ctx.lineWidth = prox * 1.1; ctx.stroke();
+        }
+      }
+
+      // ── Draw Z edges (connections between Z particles) ────────────
+      for (var i = 0; i < zpts.length; i++) {
+        for (var j = i + 1; j < zpts.length; j++) {
+          var a = zpts[i], b = zpts[j];
+          var dx = a.x - b.x, dy = a.y - b.y;
+          var dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist >= 55) continue;
+          var prox = 1 - dist / 55;
+          var la = Math.min(0.85, prox * prox * Math.min(a.alpha, b.alpha) * 1.2);
+          ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
+          ctx.strokeStyle = "rgba(" + TR + "," + TG + "," + TB + "," + la + ")";
+          ctx.lineWidth = prox * 1.6; ctx.stroke();
+        }
+      }
+
+      // ── Draw sparks ───────────────────────────────────────────────
+      for (var s = sparks.length - 1; s >= 0; s--) {
+        var sp = sparks[s];
+        sp.t += sp.speed; sp.life--;
+        if (sp.t >= 1 || sp.life <= 0) { sparks.splice(s, 1); continue; }
+        var sx = sp.ax + (sp.bx - sp.ax) * sp.t;
+        var sy = sp.ay + (sp.by - sp.ay) * sp.t;
+        var fa = sp.alpha * Math.sin(sp.t * Math.PI);
+        var g = ctx.createRadialGradient(sx, sy, 0, sx, sy, 14);
+        g.addColorStop(0, "rgba(" + TR + "," + TG + "," + TB + "," + (fa * 0.45) + ")");
+        g.addColorStop(1, "rgba(0,0,0,0)");
+        ctx.beginPath(); ctx.arc(sx, sy, 14, 0, Math.PI * 2); ctx.fillStyle = g; ctx.fill();
+        ctx.beginPath(); ctx.arc(sx, sy, 2, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(255,255,255," + fa + ")"; ctx.fill();
+      }
+
+      // ── Draw background particles ─────────────────────────────────
+      for (var i = 0; i < pts.length; i++) {
+        var p = pts[i];
+        if (p.isNode) {
+          var hr = p.size * 7 + Math.sin(time * p.flickerSpeed + p.flickerPhase) * p.size * 2;
+          var h = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, hr);
+          h.addColorStop(0, "rgba(" + TR + "," + TG + "," + TB + "," + (p.alpha * 0.25) + ")");
+          h.addColorStop(0.4, "rgba(" + TR + "," + TG + "," + TB + "," + (p.alpha * 0.08) + ")");
+          h.addColorStop(1, "rgba(0,0,0,0)");
+          ctx.beginPath(); ctx.arc(p.x, p.y, hr, 0, Math.PI * 2); ctx.fillStyle = h; ctx.fill();
+          var c = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 2.5);
+          c.addColorStop(0, "rgba(255,255,255," + (p.alpha * 0.9) + ")");
+          c.addColorStop(0.4, "rgba(" + TR + "," + TG + "," + TB + "," + (p.alpha * 0.7) + ")");
+          c.addColorStop(1, "rgba(0,0,0,0)");
+          ctx.beginPath(); ctx.arc(p.x, p.y, p.size * 2.5, 0, Math.PI * 2); ctx.fillStyle = c; ctx.fill();
+        }
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = p.isNode ? "rgba(255,255,255," + p.alpha + ")" : "rgba(" + TR + "," + TG + "," + TB + "," + p.alpha + ")";
+        ctx.fill();
+      }
+
+      // ── Draw Z particles (on top, brightest) ─────────────────────
+      for (var i = 0; i < zpts.length; i++) {
+        var p = zpts[i];
+        // Halo
+        var hr = p.size * 5 + Math.sin(time * p.flickerSpeed + p.flickerPhase) * p.size;
+        var h = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, hr);
+        h.addColorStop(0, "rgba(" + TR + "," + TG + "," + TB + "," + (p.alpha * 0.35) + ")");
+        h.addColorStop(1, "rgba(0,0,0,0)");
+        ctx.beginPath(); ctx.arc(p.x, p.y, hr, 0, Math.PI * 2); ctx.fillStyle = h; ctx.fill();
+        // Core
+        var c = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 2);
+        c.addColorStop(0, "rgba(255,255,255," + p.alpha + ")");
+        c.addColorStop(0.5, "rgba(" + TR + "," + TG + "," + TB + "," + (p.alpha * 0.8) + ")");
+        c.addColorStop(1, "rgba(0,0,0,0)");
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.size * 2, 0, Math.PI * 2); ctx.fillStyle = c; ctx.fill();
+        // Dot
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(255,255,255," + p.alpha + ")"; ctx.fill();
+      }
+
+      requestAnimationFrame(draw);
+    }
+
+    requestAnimationFrame(draw);
   }
 
   /* ================================================================
      B) CustomCursor -- dot + ring
+     Extracted from CustomCursor.tsx
      ================================================================ */
   function initCustomCursor() {
     /* skip on touch devices */
     if ("ontouchstart" in window) return;
 
     var dot = document.createElement("div");
+    dot.setAttribute("aria-hidden", "true");
     dot.style.cssText =
       "position:fixed;top:0;left:0;width:8px;height:8px;border-radius:50%;" +
-      "background:#37efed;pointer-events:none;z-index:9999;transition:width 0.2s,height 0.2s," +
-      "opacity 0.2s,background 0.2s;transform:translate(-50%,-50%);will-change:transform;";
+      "background:#37efed;pointer-events:none;z-index:9999;opacity:0;" +
+      "translate:-50% -50%;will-change:transform;" +
+      "transition:width 0.25s ease, height 0.25s ease, background 0.25s ease, opacity 0.25s ease;";
     document.body.appendChild(dot);
 
     var ring = document.createElement("div");
+    ring.setAttribute("aria-hidden", "true");
     ring.style.cssText =
       "position:fixed;top:0;left:0;width:32px;height:32px;border-radius:50%;" +
-      "border:1.5px solid #37efed;pointer-events:none;z-index:9998;opacity:0.5;" +
-      "transition:width 0.25s,height 0.25s,border 0.25s,opacity 0.3s;transform:translate(-50%,-50%);" +
-      "will-change:transform;";
+      "border:1.5px solid rgba(55,239,237,0.45);pointer-events:none;z-index:9998;opacity:0;" +
+      "translate:-50% -50%;will-change:transform;" +
+      "transition:width 0.25s ease, height 0.25s ease, border-color 0.25s ease, border-width 0.25s ease, opacity 0.25s ease;";
     document.body.appendChild(ring);
 
     var mx = -100, my = -100;
     var rx = -100, ry = -100;
-    var LERP = 0.12;
-    var visible = false;
+    var hoveredInteractive = false;
 
-    document.addEventListener("mousemove", function (e) {
-      mx = e.clientX;
-      my = e.clientY;
-      if (!visible) {
-        visible = true;
-        dot.style.opacity = "1";
-        ring.style.opacity = "0.5";
-      }
-    });
+    function isInteractive(el) {
+      if (!el) return false;
+      return !!el.closest("a, button, [role='button']");
+    }
 
-    document.addEventListener("mouseleave", function () {
-      visible = false;
-      dot.style.opacity = "0";
-      ring.style.opacity = "0";
-    });
+    function setInverted(on) {
+      if (hoveredInteractive === on) return;
+      hoveredInteractive = on;
 
-    document.addEventListener("mouseenter", function () {
-      visible = true;
-      dot.style.opacity = "1";
-      ring.style.opacity = "0.5";
-    });
-
-    /* hover detection */
-    var hoverTargets = "a, button, [role='button']";
-    document.addEventListener("mouseover", function (e) {
-      if (e.target.closest(hoverTargets)) {
+      if (on) {
         dot.style.width = "36px";
         dot.style.height = "36px";
+        dot.style.background = "#37efed";
         dot.style.opacity = "0.15";
+        ring.style.borderColor = "#37efed";
+        ring.style.borderWidth = "2px";
         ring.style.width = "42px";
         ring.style.height = "42px";
-        ring.style.borderWidth = "2px";
-      }
-    });
-    document.addEventListener("mouseout", function (e) {
-      if (e.target.closest(hoverTargets)) {
+      } else {
         dot.style.width = "8px";
         dot.style.height = "8px";
+        dot.style.background = "#37efed";
         dot.style.opacity = "1";
+        ring.style.borderColor = "rgba(55,239,237,0.45)";
+        ring.style.borderWidth = "1.5px";
         ring.style.width = "32px";
         ring.style.height = "32px";
-        ring.style.borderWidth = "1.5px";
       }
-    });
-
-    function animate() {
-      rx += (mx - rx) * LERP;
-      ry += (my - ry) * LERP;
-      dot.style.transform = "translate(-50%,-50%) translate(" + mx + "px," + my + "px)";
-      dot.style.top = "0";
-      dot.style.left = "0";
-      ring.style.transform = "translate(-50%,-50%) translate(" + rx + "px," + ry + "px)";
-      ring.style.top = "0";
-      ring.style.left = "0";
-      requestAnimationFrame(animate);
     }
-    requestAnimationFrame(animate);
+
+    function onMove(e) {
+      mx = e.clientX;
+      my = e.clientY;
+      dot.style.transform = "translate(" + mx + "px, " + my + "px)";
+      setInverted(isInteractive(e.target));
+    }
+
+    function loop() {
+      rx += (mx - rx) * 0.12;
+      ry += (my - ry) * 0.12;
+      ring.style.transform = "translate(" + rx + "px, " + ry + "px)";
+      requestAnimationFrame(loop);
+    }
+
+    function onEnter() {
+      dot.style.opacity = "1";
+      ring.style.opacity = "1";
+    }
+    function onLeave() {
+      dot.style.opacity = "0";
+      ring.style.opacity = "0";
+    }
+
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseenter", onEnter);
+    document.addEventListener("mouseleave", onLeave);
+    requestAnimationFrame(loop);
   }
 
   /* ================================================================
      C) SideTab -- "Contact us" fixed tab
+     Extracted from SideTab.tsx
      ================================================================ */
   function initSideTab() {
     var tab = document.createElement("a");
     tab.href = "#contact";
-    tab.id = "side-tab";
+    tab.setAttribute("aria-label", "Contact us");
     tab.className =
       "fixed right-0 top-1/2 z-[100] flex items-center gap-[8px] px-[14px] py-[10px] " +
       "rounded-l-[10px] bg-[#37efed] hover:bg-[#2dd9d7] transition-colors duration-200";
@@ -399,175 +386,195 @@
     document.body.appendChild(tab);
 
     tab.addEventListener("click", function (e) {
-      var target = document.getElementById("contact");
-      if (target) {
-        e.preventDefault();
-        target.scrollIntoView({ behavior: "smooth" });
-      }
+      var el = document.getElementById("contact");
+      if (!el) return;
+      e.preventDefault();
+      var top = 0;
+      var node = el;
+      while (node) { top += node.offsetTop; node = node.offsetParent; }
+      window.scrollTo({ top: top, behavior: "smooth" });
     });
   }
 
   /* ================================================================
      D) ContactModal -- auto-show after 10s
+     Extracted from ContactModal.tsx
+     (Framer Motion animations replaced with CSS transitions)
      ================================================================ */
   function initContactModal() {
     var STORAGE_KEY = "zentinelle_modal_v2";
     if (localStorage.getItem(STORAGE_KEY)) return;
 
+    var sent = false;
+    var submitting = false;
+
     /* -- build DOM -- */
     var backdrop = document.createElement("div");
+    backdrop.className = "fixed inset-0 z-[90] bg-black/50 backdrop-blur-sm";
     backdrop.style.cssText =
-      "position:fixed;inset:0;z-index:200;display:flex;align-items:flex-end;justify-content:flex-end;" +
-      "padding:16px;background:rgba(0,0,0,0.5);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);" +
       "opacity:0;pointer-events:none;transition:opacity 0.3s ease;";
 
-    var card = document.createElement("div");
-    card.style.cssText =
-      "background:#13131f;border-radius:16px;padding:32px;max-width:440px;width:100%;" +
-      "position:relative;transform:translateY(20px);transition:transform 0.3s ease;color:#fff;" +
-      "font-family:var(--font-sora),sans-serif;";
+    var modalWrap = document.createElement("div");
+    modalWrap.className = "fixed z-[91] inset-x-4 bottom-6 sm:inset-x-auto sm:bottom-8 sm:right-8 sm:left-auto sm:w-[420px]";
+    modalWrap.style.cssText =
+      "opacity:0;transform:translateY(32px) scale(0.97);pointer-events:none;" +
+      "transition:opacity 0.4s cubic-bezier(0.25,0.1,0.25,1), transform 0.4s cubic-bezier(0.25,0.1,0.25,1);";
 
-    /* close button */
-    var closeBtn = document.createElement("button");
-    closeBtn.setAttribute("aria-label", "Close");
-    closeBtn.style.cssText =
-      "position:absolute;top:16px;right:16px;background:none;border:none;color:#fff;" +
-      "opacity:0.5;cursor:pointer;font-size:20px;line-height:1;padding:4px;";
-    closeBtn.innerHTML = "&#10005;";
-    card.appendChild(closeBtn);
+    var card = document.createElement("div");
+    card.className = "bg-[#13131f] border border-white/12 rounded-[16px] p-[28px] flex flex-col gap-[20px] shadow-2xl shadow-black/60";
+
+    /* Header */
+    var headerRow = document.createElement("div");
+    headerRow.className = "flex items-start justify-between gap-4";
+
+    var headerLeft = document.createElement("div");
+    headerLeft.className = "flex flex-col gap-[6px]";
 
     /* badge */
     var badge = document.createElement("div");
-    badge.style.cssText =
-      "display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:200px;" +
-      "background:rgba(55,239,237,0.12);margin-bottom:16px;";
+    badge.className = "self-start flex items-center gap-[6px] px-[10px] py-[4px] rounded-[200px]";
+    badge.style.cssText = "background:rgba(55,239,237,0.1);border:1px solid rgba(55,239,237,0.2);";
     badge.innerHTML =
-      '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#37efed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
-      '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>' +
-      '<span style="color:#37efed;font-size:12px;text-transform:uppercase;letter-spacing:0.05em;">Let\'s talk</span>';
-    card.appendChild(badge);
+      '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#37efed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+      '<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>' +
+      '<span class="text-[#37efed] text-[11px] uppercase tracking-wide" style="font-family:var(--font-sora), sans-serif;font-weight:400">Let\'s talk</span>';
+    headerLeft.appendChild(badge);
 
     /* headline */
-    var h = document.createElement("p");
-    h.textContent = "Have questions?";
-    h.style.cssText =
-      "font-family:var(--font-boldonse),sans-serif;font-size:28px;line-height:1.3;" +
-      "margin:0 0 8px;font-weight:400;";
-    card.appendChild(h);
+    var headline = document.createElement("p");
+    headline.className = "text-white text-[18px] leading-snug";
+    headline.style.cssText = "font-family:var(--font-boldonse), sans-serif;font-weight:400;";
+    headline.textContent = "Have questions?";
+    headerLeft.appendChild(headline);
 
     /* subtitle */
-    var sub = document.createElement("p");
-    sub.textContent = "Get in touch \u2014 we reply fast.";
-    sub.style.cssText =
-      "font-size:14px;color:rgba(255,255,255,0.55);margin:0 0 24px;font-weight:400;";
-    card.appendChild(sub);
+    var subtitle = document.createElement("p");
+    subtitle.className = "text-[#ccccd8] text-[13px] leading-relaxed";
+    subtitle.style.cssText = "font-family:var(--font-sora), sans-serif;font-weight:300;";
+    subtitle.textContent = "Get in touch \u2014 we reply fast.";
+    headerLeft.appendChild(subtitle);
 
-    /* form */
-    var form = document.createElement("form");
-    form.style.cssText = "display:flex;flex-direction:column;gap:14px;";
+    headerRow.appendChild(headerLeft);
 
-    /* name + email row */
-    var row = document.createElement("div");
-    row.style.cssText = "display:flex;gap:12px;";
+    /* close button */
+    var closeBtn = document.createElement("button");
+    closeBtn.className = "shrink-0 w-[28px] h-[28px] flex items-center justify-center rounded-[8px] text-white/40 hover:text-white hover:bg-white/8 transition-colors mt-[2px]";
+    closeBtn.setAttribute("aria-label", "Close");
+    closeBtn.innerHTML =
+      '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
+      '<path d="M18 6L6 18M6 6l12 12"/></svg>';
+    headerRow.appendChild(closeBtn);
 
-    function makeInput(type, placeholder, name) {
-      var inp = document.createElement("input");
-      inp.type = type;
-      inp.name = name;
-      inp.placeholder = placeholder;
-      inp.required = true;
-      inp.style.cssText =
-        "flex:1;padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.12);" +
-        "background:rgba(255,255,255,0.05);color:#fff;font-size:14px;outline:none;" +
-        "font-family:var(--font-sora),sans-serif;transition:border-color 0.2s;";
-      inp.addEventListener("focus", function () { inp.style.borderColor = "rgba(55,239,237,0.5)"; });
-      inp.addEventListener("blur", function () { inp.style.borderColor = "rgba(255,255,255,0.12)"; });
-      return inp;
-    }
-
-    var nameInput = makeInput("text", "Name", "name");
-    var emailInput = makeInput("email", "Email", "email");
-    row.appendChild(nameInput);
-    row.appendChild(emailInput);
-    form.appendChild(row);
-
-    var textarea = document.createElement("textarea");
-    textarea.placeholder = "Message";
-    textarea.name = "message";
-    textarea.rows = 4;
-    textarea.required = true;
-    textarea.style.cssText =
-      "padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.12);" +
-      "background:rgba(255,255,255,0.05);color:#fff;font-size:14px;outline:none;resize:none;" +
-      "font-family:var(--font-sora),sans-serif;transition:border-color 0.2s;";
-    textarea.addEventListener("focus", function () { textarea.style.borderColor = "rgba(55,239,237,0.5)"; });
-    textarea.addEventListener("blur", function () { textarea.style.borderColor = "rgba(255,255,255,0.12)"; });
-    form.appendChild(textarea);
-
-    var sendBtn = document.createElement("button");
-    sendBtn.type = "submit";
-    sendBtn.textContent = "Send";
-    sendBtn.style.cssText =
-      "align-self:flex-start;padding:10px 24px;border-radius:10px;border:none;" +
-      "background:#37efed;color:#0b0b19;font-size:14px;font-weight:600;cursor:pointer;" +
-      "font-family:var(--font-sora),sans-serif;transition:background 0.2s;";
-    sendBtn.addEventListener("mouseenter", function () { sendBtn.style.background = "#2dd9d7"; });
-    sendBtn.addEventListener("mouseleave", function () { sendBtn.style.background = "#37efed"; });
-    form.appendChild(sendBtn);
-
-    card.appendChild(form);
-
-    /* email link */
-    var emailLink = document.createElement("p");
-    emailLink.style.cssText = "margin:16px 0 0;font-size:13px;color:rgba(255,255,255,0.4);";
-    emailLink.innerHTML =
-      'Or email us at <a href="mailto:hello@zentinelle.com" style="color:#37efed;text-decoration:underline;">hello@zentinelle.com</a>';
-    card.appendChild(emailLink);
+    card.appendChild(headerRow);
 
     /* sent confirmation (hidden) */
     var sentDiv = document.createElement("div");
-    sentDiv.style.cssText =
-      "display:none;flex-direction:column;align-items:center;gap:16px;padding:24px 0;text-align:center;";
+    sentDiv.className = "flex flex-col items-center gap-[12px] py-[16px]";
+    sentDiv.style.display = "none";
     sentDiv.innerHTML =
-      '<svg width="48" height="48" viewBox="0 0 48 48" fill="none">' +
-      '<circle cx="24" cy="24" r="23" stroke="#37efed" stroke-width="2"/>' +
-      '<path d="M14 24l7 7 13-13" stroke="#37efed" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
-      '<p style="font-family:var(--font-boldonse),sans-serif;font-size:22px;margin:0;font-weight:400;">Message sent!</p>' +
-      '<p style="font-size:14px;color:rgba(255,255,255,0.55);margin:0;">We\'ll get back to you shortly.</p>';
+      '<div class="flex items-center justify-center w-[44px] h-[44px] rounded-full bg-[#37efed]">' +
+      '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#0b0b19" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">' +
+      '<path d="M20 6L9 17l-5-5"/></svg></div>' +
+      '<p class="text-white text-[15px] text-center" style="font-family:var(--font-sora), sans-serif;font-weight:700">Message sent!</p>' +
+      '<p class="text-[#ccccd8]/60 text-[13px] text-center" style="font-family:var(--font-sora), sans-serif;font-weight:300">We\'ll get back to you shortly.</p>';
     card.appendChild(sentDiv);
 
-    backdrop.appendChild(card);
+    /* form */
+    var form = document.createElement("form");
+    form.className = "flex flex-col gap-[12px]";
+
+    var inputRow = document.createElement("div");
+    inputRow.className = "flex flex-col sm:flex-row gap-[10px]";
+
+    var nameInput = document.createElement("input");
+    nameInput.type = "text";
+    nameInput.placeholder = "Name";
+    nameInput.required = true;
+    nameInput.className = "flex-1 px-[12px] py-[9px] rounded-[8px] text-[13px] bg-white/5 border border-white/10 text-white placeholder:text-white/30 outline-none focus:border-[#37efed]/40 transition-colors";
+    nameInput.style.cssText = "font-family:var(--font-sora), sans-serif;";
+    inputRow.appendChild(nameInput);
+
+    var emailInput = document.createElement("input");
+    emailInput.type = "email";
+    emailInput.placeholder = "Email";
+    emailInput.required = true;
+    emailInput.className = "flex-1 px-[12px] py-[9px] rounded-[8px] text-[13px] bg-white/5 border border-white/10 text-white placeholder:text-white/30 outline-none focus:border-[#37efed]/40 transition-colors";
+    emailInput.style.cssText = "font-family:var(--font-sora), sans-serif;";
+    inputRow.appendChild(emailInput);
+
+    form.appendChild(inputRow);
+
+    var textarea = document.createElement("textarea");
+    textarea.rows = 3;
+    textarea.placeholder = "Your message\u2026";
+    textarea.required = true;
+    textarea.className = "w-full px-[12px] py-[9px] rounded-[8px] text-[13px] bg-white/5 border border-white/10 text-white placeholder:text-white/30 outline-none focus:border-[#37efed]/40 transition-colors resize-none";
+    textarea.style.cssText = "font-family:var(--font-sora), sans-serif;";
+    form.appendChild(textarea);
+
+    var formFooter = document.createElement("div");
+    formFooter.className = "flex items-center justify-between gap-3 pt-[2px]";
+
+    var emailLink = document.createElement("a");
+    emailLink.href = "mailto:hello@zentinelle.com";
+    emailLink.className = "text-[#ccccd8]/50 text-[12px] hover:text-[#37efed] transition-colors flex items-center gap-[6px]";
+    emailLink.style.cssText = "font-family:var(--font-sora), sans-serif;";
+    emailLink.innerHTML =
+      '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+      '<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M22 6l-10 7L2 6"/></svg>' +
+      'hello@zentinelle.com';
+    formFooter.appendChild(emailLink);
+
+    var sendBtn = document.createElement("button");
+    sendBtn.type = "submit";
+    sendBtn.className = "flex items-center gap-[8px] px-[16px] py-[9px] rounded-[8px] text-[13px] bg-[#37efed] text-[#0b0b19] hover:bg-white transition-colors disabled:opacity-60 shrink-0";
+    sendBtn.style.cssText = "font-family:var(--font-sora), sans-serif;font-weight:600;";
+    sendBtn.textContent = "Send";
+    formFooter.appendChild(sendBtn);
+
+    form.appendChild(formFooter);
+    card.appendChild(form);
+
+    modalWrap.appendChild(card);
     document.body.appendChild(backdrop);
+    document.body.appendChild(modalWrap);
 
     /* -- behavior -- */
     function showModal() {
       backdrop.style.opacity = "1";
       backdrop.style.pointerEvents = "auto";
-      card.style.transform = "translateY(0)";
+      modalWrap.style.opacity = "1";
+      modalWrap.style.transform = "translateY(0) scale(1)";
+      modalWrap.style.pointerEvents = "auto";
     }
 
-    function hideModal() {
+    function dismiss() {
+      localStorage.setItem(STORAGE_KEY, "1");
       backdrop.style.opacity = "0";
       backdrop.style.pointerEvents = "none";
-      card.style.transform = "translateY(20px)";
-      localStorage.setItem(STORAGE_KEY, "1");
+      modalWrap.style.opacity = "0";
+      modalWrap.style.transform = "translateY(24px) scale(0.97)";
+      modalWrap.style.pointerEvents = "none";
     }
 
-    closeBtn.addEventListener("click", hideModal);
-    backdrop.addEventListener("click", function (e) {
-      if (e.target === backdrop) hideModal();
-    });
+    closeBtn.addEventListener("click", dismiss);
+    backdrop.addEventListener("click", dismiss);
 
     form.addEventListener("submit", function (e) {
       e.preventDefault();
+      if (submitting) return;
+      submitting = true;
       sendBtn.disabled = true;
-      sendBtn.textContent = "Sending...";
+      sendBtn.innerHTML =
+        '<svg class="animate-spin" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5">' +
+        '<path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>' +
+        "Sending\u2026";
       setTimeout(function () {
+        submitting = false;
+        sent = true;
         form.style.display = "none";
-        sub.style.display = "none";
-        emailLink.style.display = "none";
         sentDiv.style.display = "flex";
-        setTimeout(hideModal, 3000);
+        setTimeout(dismiss, 2200);
       }, 900);
     });
 
@@ -577,8 +584,40 @@
 
   /* ================================================================
      E) Navbar interactivity
+     Extracted from NavBar.tsx
      ================================================================ */
   function initNavbar() {
+    var navLinks = [
+      { label: "How it works",     href: "/#how-it-works",    sectionId: "how-it-works",  page: null                },
+      { label: "Features",         href: "/#governance",      sectionId: "governance",    page: null                },
+      { label: "Governance",       href: "/governance",       sectionId: null,            page: "/governance"       },
+      { label: "Risk",             href: "/risk",             sectionId: null,            page: "/risk"             },
+      { label: "Observability",    href: "/observability",    sectionId: null,            page: "/observability"    },
+      { label: "Content Scanning", href: "/content-scanning", sectionId: null,            page: "/content-scanning" },
+      { label: "Compliance",       href: "/compliance",       sectionId: null,            page: "/compliance"       },
+      { label: "Quick Start",      href: "/#quick-start",     sectionId: "quick-start",   page: null                },
+      { label: "Docs",             href: "https://zentinelle.dev/wiki/sdk/", sectionId: null, page: null            },
+    ];
+
+    var imgDot = "/bb66de66bee7ad3628b9dc976894505fce847328.svg";
+
+    function getAbsoluteTop(el) {
+      var top = 0;
+      var node = el;
+      while (node) {
+        top += node.offsetTop;
+        node = node.offsetParent;
+      }
+      return top;
+    }
+
+    function scrollToSection(sectionId) {
+      var el = document.getElementById(sectionId);
+      if (!el) return;
+      var top = getAbsoluteTop(el);
+      window.scrollTo({ top: top, behavior: "smooth" });
+    }
+
     /* --- mobile menu toggle --- */
     var burger = document.querySelector('header button[aria-label="Toggle menu"]');
     var drawer = document.querySelector("div.fixed.inset-0.z-40");
@@ -599,9 +638,10 @@
       drawerPanel.classList.add("translate-x-0");
       /* animate burger to X */
       if (lines.length >= 3) {
-        lines[0].style.transform = "translateY(3.25px) rotate(45deg)";
+        lines[0].style.transform = "rotate(45deg) translate(6.5px, 6.5px)";
         lines[1].style.opacity = "0";
-        lines[2].style.transform = "translateY(-3.25px) rotate(-45deg)";
+        lines[1].style.transform = "scaleX(0)";
+        lines[2].style.transform = "rotate(-45deg) translate(6.5px, -6.5px)";
       }
     }
 
@@ -616,6 +656,7 @@
       if (lines.length >= 3) {
         lines[0].style.transform = "";
         lines[1].style.opacity = "";
+        lines[1].style.transform = "";
         lines[2].style.transform = "";
       }
     }
@@ -628,111 +669,169 @@
     drawerBackdrop.addEventListener("click", closeMenu);
 
     /* close when clicking a link inside the drawer */
-    drawerPanel.querySelectorAll("a").forEach(function (link) {
-      link.addEventListener("click", function () {
-        closeMenu();
-      });
-    });
-
-    /* --- smooth scroll for hash links (homepage only) --- */
-    var isHomepage = window.location.pathname === "/" || window.location.pathname === "/index.html";
-
-    if (isHomepage) {
-      document.querySelectorAll('a[href^="/#"]').forEach(function (link) {
+    var drawerLinks = drawerPanel.querySelectorAll("a");
+    for (var i = 0; i < drawerLinks.length; i++) {
+      (function (link) {
         link.addEventListener("click", function (e) {
-          var hash = link.getAttribute("href").replace(/^\/?/, "");
-          var target = document.querySelector(hash);
-          if (target) {
-            e.preventDefault();
-            target.scrollIntoView({ behavior: "smooth" });
-            history.replaceState(null, "", hash);
-          }
-        });
-      });
-    }
-
-    /* --- active section tracking (homepage only) --- */
-    if (isHomepage) {
-      var sectionIds = ["how-it-works", "governance", "quick-start"];
-      var navLinks = document.querySelectorAll("header nav a");
-
-      /* map from section ID -> matching nav links (href contains the hash) */
-      var sectionLinkMap = {};
-      sectionIds.forEach(function (id) {
-        sectionLinkMap[id] = [];
-        navLinks.forEach(function (link) {
-          if (link.getAttribute("href") === "/#" + id) {
-            sectionLinkMap[id].push(link);
-          }
-        });
-      });
-
-      /* dot image src from the Start link */
-      var dotSrc = "";
-      var startLink = document.querySelector('header nav a[href="/"]');
-      if (startLink) {
-        var dotImg = startLink.querySelector("img");
-        if (dotImg) dotSrc = dotImg.getAttribute("src");
-      }
-
-      function updateActiveSection() {
-        var current = null;
-        var scrollY = window.scrollY;
-        var windowH = window.innerHeight;
-
-        for (var i = 0; i < sectionIds.length; i++) {
-          var el = document.getElementById(sectionIds[i]);
-          if (!el) continue;
-          var rect = el.getBoundingClientRect();
-          /* section is "in view" when its top is in the upper 60% of viewport */
-          if (rect.top < windowH * 0.6 && rect.bottom > 0) {
-            current = sectionIds[i];
-          }
-        }
-
-        /* update link styles */
-        sectionIds.forEach(function (id) {
-          var links = sectionLinkMap[id];
-          if (!links) return;
-          links.forEach(function (link) {
-            var span = link.querySelector("span");
-            var existingDot = link.querySelector("img.active-dot");
-            if (id === current) {
-              if (span) span.style.fontWeight = "700";
-              link.style.background = "rgba(255,255,255,0.05)";
-              /* add dot if not present */
-              if (!existingDot && dotSrc) {
-                var img = document.createElement("img");
-                img.src = dotSrc;
-                img.alt = "";
-                img.width = 8;
-                img.height = 8;
-                img.className = "shrink-0 active-dot";
-                img.style.color = "transparent";
-                link.insertBefore(img, link.firstChild);
-              }
-            } else {
-              if (span) span.style.fontWeight = "400";
-              link.style.background = "";
-              if (existingDot) existingDot.remove();
+          closeMenu();
+          /* handle section scroll links in the drawer on homepage */
+          var href = link.getAttribute("href");
+          for (var j = 0; j < navLinks.length; j++) {
+            if (navLinks[j].href === href && navLinks[j].sectionId && isHomePage) {
+              e.preventDefault();
+              scrollToSection(navLinks[j].sectionId);
+              return;
             }
-          });
+          }
         });
+      })(drawerLinks[i]);
+    }
+
+    /* --- detect homepage --- */
+    var pathname = window.location.pathname.replace(/\/+$/, "") || "/";
+    var isHomePage = pathname === "/" || pathname === "/index.html";
+
+    /* --- smooth scroll for section links (homepage only) --- */
+    if (isHomePage) {
+      var allNavAnchors = document.querySelectorAll('header nav a, div.fixed.inset-0.z-40 nav a');
+      for (var i = 0; i < allNavAnchors.length; i++) {
+        (function (link) {
+          var href = link.getAttribute("href");
+          for (var j = 0; j < navLinks.length; j++) {
+            if (navLinks[j].href === href && navLinks[j].sectionId) {
+              link.addEventListener("click", function (e) {
+                e.preventDefault();
+                scrollToSection(navLinks[j].sectionId);
+              });
+              break;
+            }
+          }
+        })(allNavAnchors[i]);
+      }
+    }
+
+    /* --- active section tracking --- */
+    var sectionIds = [];
+    for (var i = 0; i < navLinks.length; i++) {
+      if (navLinks[i].sectionId) sectionIds.push(navLinks[i].sectionId);
+    }
+
+    /* map from section ID -> matching nav links */
+    var desktopNav = document.querySelectorAll("header nav a");
+    var drawerNav = drawerPanel.querySelectorAll("a");
+
+    function getAllLinksForHref(href) {
+      var result = [];
+      for (var i = 0; i < desktopNav.length; i++) {
+        if (desktopNav[i].getAttribute("href") === href) result.push(desktopNav[i]);
+      }
+      for (var i = 0; i < drawerNav.length; i++) {
+        if (drawerNav[i].getAttribute("href") === href) result.push(drawerNav[i]);
+      }
+      return result;
+    }
+
+    /* Start link (href="/") */
+    var startLinks = getAllLinksForHref("/");
+
+    function updateActiveSection() {
+      var scrollY = window.scrollY;
+      var threshold = window.innerHeight * 0.4;
+      var current = null;
+
+      for (var i = 0; i < sectionIds.length; i++) {
+        var el = document.getElementById(sectionIds[i]);
+        if (!el) continue;
+        if (el.offsetTop - threshold <= scrollY) current = sectionIds[i];
       }
 
-      var scrollTick = false;
-      window.addEventListener("scroll", function () {
-        if (!scrollTick) {
-          scrollTick = true;
-          requestAnimationFrame(function () {
-            updateActiveSection();
-            scrollTick = false;
-          });
+      /* update nav link styles */
+      for (var i = 0; i < navLinks.length; i++) {
+        var nl = navLinks[i];
+        var isActive;
+        if (nl.page) {
+          isActive = pathname === nl.page;
+        } else if (nl.sectionId) {
+          isActive = isHomePage && current === nl.sectionId;
+        } else {
+          isActive = false;
         }
-      });
-      /* initial check */
-      updateActiveSection();
+
+        var links = getAllLinksForHref(nl.href);
+        for (var j = 0; j < links.length; j++) {
+          var link = links[j];
+          var span = link.querySelector("span");
+          var existingDot = link.querySelector("img.active-dot");
+
+          if (isActive) {
+            if (span) span.style.fontWeight = "700";
+            link.style.background = "rgba(255,255,255,0.05)";
+            link.classList.remove("hover:bg-white/5");
+            if (!existingDot && imgDot) {
+              var img = document.createElement("img");
+              img.src = imgDot;
+              img.alt = "";
+              img.width = 8;
+              img.height = 8;
+              img.className = "shrink-0 active-dot";
+              img.style.color = "transparent";
+              link.insertBefore(img, link.firstChild);
+            }
+          } else {
+            if (span) span.style.fontWeight = "400";
+            link.style.background = "";
+            if (!link.classList.contains("hover:bg-white/5")) {
+              link.classList.add("hover:bg-white/5");
+            }
+            if (existingDot) existingDot.remove();
+          }
+        }
+      }
+
+      /* Start link: active when on homepage and no section is active */
+      var startActive = isHomePage && current === null;
+      for (var i = 0; i < startLinks.length; i++) {
+        var link = startLinks[i];
+        var span = link.querySelector("span");
+        var existingDot = link.querySelector("img.active-dot");
+
+        if (startActive) {
+          if (span) span.style.fontWeight = "700";
+          link.style.background = "rgba(255,255,255,0.05)";
+          link.classList.remove("hover:bg-white/5");
+          if (!existingDot && imgDot) {
+            var img = document.createElement("img");
+            img.src = imgDot;
+            img.alt = "";
+            img.width = 8;
+            img.height = 8;
+            img.className = "shrink-0 active-dot";
+            img.style.color = "transparent";
+            link.insertBefore(img, link.firstChild);
+          }
+        } else {
+          if (span) span.style.fontWeight = "400";
+          link.style.background = "";
+          if (!link.classList.contains("hover:bg-white/5")) {
+            link.classList.add("hover:bg-white/5");
+          }
+          if (existingDot) existingDot.remove();
+        }
+      }
     }
+
+    var scrollTick = false;
+    window.addEventListener("scroll", function () {
+      if (!scrollTick) {
+        scrollTick = true;
+        requestAnimationFrame(function () {
+          updateActiveSection();
+          scrollTick = false;
+        });
+      }
+    }, { passive: true });
+    /* initial check */
+    updateActiveSection();
   }
 
   /* ================================================================
@@ -763,7 +862,7 @@
           scrollTick = false;
         });
       }
-    });
+    }, { passive: true });
 
     btn.addEventListener("click", function () {
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -775,6 +874,7 @@
 
   /* ================================================================
      G) CardStack  -- scroll-driven section reveal/fade
+     Extracted from CardStackWrapper.tsx
      ================================================================ */
   function initCardStack() {
     var sections = document.querySelectorAll("[data-card]");
@@ -782,16 +882,18 @@
 
     function update() {
       var vh = window.innerHeight;
-      sections.forEach(function (section, i) {
+
+      for (var i = 0; i < sections.length; i++) {
+        var section = sections[i];
         var inner = section.querySelector("[data-card-inner]");
-        if (!inner) return;
+        if (!inner) continue;
 
         var top = section.getBoundingClientRect().top;
 
-        /* Fade-in: 0 when fully below viewport → 1 when top reaches 50% */
+        // Fade-in: 0 when fully below viewport, 1 when top reaches 50% of viewport
         var fadeIn = Math.max(0, Math.min(1, 1 - (top - vh * 0.5) / (vh * 0.5)));
 
-        /* Scale + dim + fade-out as NEXT section overlaps */
+        // Scale + dim + fade: applied as the NEXT section slides over this one
         var next = sections[i + 1];
         var scale = 1;
         var brightness = 1;
@@ -801,6 +903,7 @@
           var progress = Math.max(0, Math.min(1, 1 - nextTop / vh));
           scale = 1 - progress * 0.04;
           brightness = 1 - progress * 0.18;
+          // Fade out this card once next card is ~35% overlapping
           var fadeStart = 0.35;
           var fadeEnd = 0.75;
           var fadeOut = Math.max(0, Math.min(1, (progress - fadeStart) / (fadeEnd - fadeStart)));
@@ -810,7 +913,7 @@
         inner.style.opacity = stackOpacity.toFixed(4);
         inner.style.transform = "scale(" + scale.toFixed(4) + ")";
         inner.style.filter = "brightness(" + brightness.toFixed(4) + ")";
-      });
+      }
     }
 
     window.addEventListener("scroll", update, { passive: true });
