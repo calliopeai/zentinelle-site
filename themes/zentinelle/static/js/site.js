@@ -922,9 +922,315 @@
   }
 
   /* ================================================================
+     H) Lenis Smooth Scroll
+     Extracted from SmoothScroll.tsx -- loaded via CDN
+     ================================================================ */
+  function initSmoothScroll() {
+    var script = document.createElement("script");
+    script.src = "https://unpkg.com/lenis@1.3.21/dist/lenis.min.js";
+    script.onload = function () {
+      if (typeof Lenis === "undefined") return;
+
+      var lenis = new Lenis({
+        duration: 1.4,
+        easing: function (t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); },
+        touchMultiplier: 1.5,
+      });
+
+      window.__lenis = lenis;
+
+      var raf;
+      function frame(time) {
+        lenis.raf(time);
+        raf = requestAnimationFrame(frame);
+      }
+      raf = requestAnimationFrame(frame);
+    };
+    document.head.appendChild(script);
+  }
+
+  /* ================================================================
+     I) Page Transition -- fade-in on load
+     Extracted from PageTransition.tsx (Framer Motion -> CSS)
+     ================================================================ */
+  function initPageTransition() {
+    /* Target the outer content wrapper in baseof.html:
+       <div style="opacity:1;transform:none"> */
+    var wrapper = document.querySelector('div[style*="opacity:1"][style*="transform:none"]');
+    if (!wrapper) return;
+
+    /* Start hidden */
+    wrapper.style.opacity = "0";
+    wrapper.style.transform = "translateY(18px)";
+    wrapper.style.transition = "none";
+
+    /* Force a reflow so the browser registers the start state */
+    void wrapper.offsetHeight;
+
+    /* Animate in */
+    wrapper.style.transition = "opacity 0.38s cubic-bezier(0.25, 0.1, 0.25, 1), transform 0.38s cubic-bezier(0.25, 0.1, 0.25, 1)";
+    wrapper.style.opacity = "1";
+    wrapper.style.transform = "translateY(0)";
+  }
+
+  /* ================================================================
+     J) StatusSlider -- auto-advancing "Working now" slider
+     Extracted from StatusSlider.tsx
+     ================================================================ */
+  function initStatusSlider() {
+    var items = [
+      "Claude Code integration (hooks)",
+      "OpenAI Codex integration (proxy)",
+      "Gemini CLI integration (hooks)",
+      "Policy engine \u2014 rate limits, tool permissions, model restrictions",
+      "Real-time monitoring dashboard",
+      "LLM proxy (Anthropic, OpenAI, Google)",
+      "Compliance dashboards (SOC2, GDPR, HIPAA, EU AI Act, NIST)",
+      "Python + TypeScript SDKs",
+    ];
+
+    /* Find the card by locating the "Working now" label */
+    var labels = document.querySelectorAll("span");
+    var headerLabel = null;
+    for (var i = 0; i < labels.length; i++) {
+      if (labels[i].textContent.trim() === "Working now") {
+        headerLabel = labels[i];
+        break;
+      }
+    }
+    if (!headerLabel) return;
+
+    /* Walk up to the card root: the div with class containing "shrink-0 w-full lg:w-[468px]" */
+    var card = headerLabel.closest('.shrink-0.w-full.lg\\:w-\\[468px\\]');
+    if (!card) return;
+
+    /* Locate sub-elements */
+    var counterSpan = card.querySelector(".ml-auto.text-white\\/25");
+    var slideArea = card.querySelector(".flex-1.flex.flex-col.justify-center");
+    var slideInner = slideArea ? slideArea.querySelector("div[style]") : null;
+    var textEl = slideInner ? slideInner.querySelector("p") : null;
+    var dots = card.querySelectorAll('button[aria-label^="Slide"]');
+    var progressTrack = card.querySelector(".w-full.h-\\[2px\\]");
+    var progressBar = progressTrack ? progressTrack.querySelector(".h-full") : null;
+
+    if (!textEl || !dots.length || !progressBar) return;
+
+    var active = 0;
+    var animating = false;
+    var timer = null;
+
+    function updateUI() {
+      /* Counter */
+      if (counterSpan) counterSpan.textContent = (active + 1) + " / " + items.length;
+
+      /* Text */
+      textEl.textContent = items[active];
+
+      /* Dots */
+      for (var i = 0; i < dots.length; i++) {
+        dots[i].style.width = (i === active) ? "24px" : "6px";
+        dots[i].style.background = (i === active) ? "#37efed" : "rgba(255,255,255,0.15)";
+      }
+
+      /* Progress bar */
+      progressBar.style.width = (((active + 1) / items.length) * 100) + "%";
+    }
+
+    function goTo(index) {
+      if (animating) return;
+      animating = true;
+
+      /* Fade out */
+      slideInner.style.opacity = "0";
+      slideInner.style.transform = "translateY(10px)";
+
+      setTimeout(function () {
+        active = index;
+        updateUI();
+
+        /* Fade in */
+        slideInner.style.opacity = "1";
+        slideInner.style.transform = "translateY(0)";
+        animating = false;
+      }, 300);
+    }
+
+    function scheduleNext() {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(function () {
+        goTo((active + 1) % items.length);
+        scheduleNext();
+      }, 3200);
+    }
+
+    /* Dot click handlers */
+    for (var i = 0; i < dots.length; i++) {
+      (function (idx) {
+        dots[idx].addEventListener("click", function () {
+          if (animating) return;
+          goTo(idx);
+          scheduleNext(); /* reset timer on manual navigation */
+        });
+      })(i);
+    }
+
+    /* Start auto-advance */
+    scheduleNext();
+  }
+
+  /* ================================================================
+     K) ComingSoonSlider -- auto-advancing "Coming soon" slider
+     Extracted from ComingSoonSlider.tsx
+     ================================================================ */
+  function initComingSoonSlider() {
+    var items = [
+      "LangChain callback handlers",
+      "LlamaIndex governed query engines",
+      "CrewAI multi-agent integration",
+      "Vercel AI SDK support",
+      "Microsoft Agent Framework",
+      "n8n workflow nodes",
+      "Java + Go SDKs",
+      "Hosted / managed version",
+      "Policy-as-code (YAML / OPA)",
+    ];
+
+    /* Find the card by locating the "Coming soon" label */
+    var labels = document.querySelectorAll("span");
+    var headerLabel = null;
+    for (var i = 0; i < labels.length; i++) {
+      if (labels[i].textContent.trim() === "Coming soon") {
+        headerLabel = labels[i];
+        break;
+      }
+    }
+    if (!headerLabel) return;
+
+    var card = headerLabel.closest('.shrink-0.w-full.lg\\:w-\\[468px\\]');
+    if (!card) return;
+
+    var counterSpan = card.querySelector(".ml-auto.text-white\\/25");
+    var slideArea = card.querySelector(".flex-1.flex.flex-col.justify-center");
+    var slideInner = slideArea ? slideArea.querySelector("div[style]") : null;
+    var textEl = slideInner ? slideInner.querySelector("p") : null;
+    var dots = card.querySelectorAll('button[aria-label^="Slide"]');
+    var progressTrack = card.querySelector(".w-full.h-\\[2px\\]");
+    var progressBar = progressTrack ? progressTrack.querySelector(".h-full") : null;
+
+    if (!textEl || !dots.length || !progressBar) return;
+
+    var active = 0;
+    var animating = false;
+    var timer = null;
+
+    function updateUI() {
+      if (counterSpan) counterSpan.textContent = (active + 1) + " / " + items.length;
+      textEl.textContent = items[active];
+
+      for (var i = 0; i < dots.length; i++) {
+        dots[i].style.width = (i === active) ? "24px" : "6px";
+        dots[i].style.background = (i === active) ? "rgba(255,255,255,0.5)" : "rgba(255,255,255,0.12)";
+      }
+
+      progressBar.style.width = (((active + 1) / items.length) * 100) + "%";
+    }
+
+    function goTo(index) {
+      if (animating) return;
+      animating = true;
+
+      slideInner.style.opacity = "0";
+      slideInner.style.transform = "translateY(10px)";
+
+      setTimeout(function () {
+        active = index;
+        updateUI();
+        slideInner.style.opacity = "1";
+        slideInner.style.transform = "translateY(0)";
+        animating = false;
+      }, 300);
+    }
+
+    function scheduleNext() {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(function () {
+        goTo((active + 1) % items.length);
+        scheduleNext();
+      }, 3200);
+    }
+
+    for (var i = 0; i < dots.length; i++) {
+      (function (idx) {
+        dots[idx].addEventListener("click", function () {
+          if (animating) return;
+          goTo(idx);
+          scheduleNext();
+        });
+      })(i);
+    }
+
+    scheduleNext();
+  }
+
+  /* ================================================================
+     L) CopyButton -- copy code blocks to clipboard
+     Extracted from CopyButton.tsx
+     ================================================================ */
+  function initCopyButtons() {
+    var COPY_SVG =
+      '<svg width="14" height="14" viewBox="0 0 14 14" fill="none">' +
+      '<rect x="4" y="1" width="8" height="9" rx="1.5" stroke="#0b0b19" stroke-width="1.5"/>' +
+      '<path d="M2 5H1.5A1.5 1.5 0 0 0 0 6.5v6A1.5 1.5 0 0 0 1.5 14H8a1.5 1.5 0 0 0 1.5-1.5V12" stroke="#0b0b19" stroke-width="1.5" stroke-linecap="round"/>' +
+      '</svg>';
+
+    var CHECK_SVG =
+      '<svg width="14" height="14" viewBox="0 0 14 14" fill="none">' +
+      '<path d="M2.5 7.5L5.5 10.5L11.5 4" stroke="#0b0b19" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>' +
+      '</svg>';
+
+    var buttons = document.querySelectorAll('button[aria-label="Copy code"]');
+
+    for (var i = 0; i < buttons.length; i++) {
+      (function (btn) {
+        /* The button is inside a header div. The code content div is the
+           next sibling of that header within the code block card. */
+        var headerDiv = btn.parentElement;
+        var codeDiv = headerDiv ? headerDiv.nextElementSibling : null;
+
+        /* Style the button to match the teal CopyButton.tsx design */
+        btn.style.background = "#37efed";
+        btn.style.width = "28px";
+        btn.style.height = "28px";
+        btn.style.display = "flex";
+        btn.style.alignItems = "center";
+        btn.style.justifyContent = "center";
+        btn.style.borderRadius = "6px";
+        btn.style.border = "none";
+        btn.style.cursor = "pointer";
+        btn.style.color = "";
+        btn.innerHTML = COPY_SVG;
+
+        btn.addEventListener("click", function () {
+          if (!codeDiv) return;
+
+          var text = codeDiv.textContent || "";
+          navigator.clipboard.writeText(text).then(function () {
+            btn.innerHTML = CHECK_SVG;
+            setTimeout(function () {
+              btn.innerHTML = COPY_SVG;
+            }, 1800);
+          });
+        });
+      })(buttons[i]);
+    }
+  }
+
+  /* ================================================================
      INIT
      ================================================================ */
   document.addEventListener("DOMContentLoaded", function () {
+    initPageTransition();
+    initSmoothScroll();
     initParticleField();
     initCustomCursor();
     initSideTab();
@@ -932,5 +1238,8 @@
     initNavbar();
     initBackToTop();
     initCardStack();
+    initStatusSlider();
+    initComingSoonSlider();
+    initCopyButtons();
   });
 })();
