@@ -1,4 +1,5 @@
 ---
+type: "content-scanning"
 title: "Content Scanning"
 description: "Detect PII, toxicity, and prompt injection before data leaves your perimeter. Block, warn, or log — you decide."
 headline: "Catch It <span class=\"accent\">Before It Leaks.</span>"

@@ -1,4 +1,5 @@
 ---
+type: "governance"
 title: "Policy Management"
 description: "Define what AI can and can't do across your organization. 18+ policy types with inheritance from org to user level."
 headline: "Policy-Based <span class=\"accent\">AI Control.</span>"

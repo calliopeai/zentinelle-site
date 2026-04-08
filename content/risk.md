@@ -1,4 +1,5 @@
 ---
+type: "risk"
 title: "Risk Management"
 description: "Identify AI-specific threats, detect anomalies, manage incidents, and mitigate risks before they become breaches."
 headline: "AI Risk <span class=\"accent\">Under Control.</span>"

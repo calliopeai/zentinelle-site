@@ -1,0 +1,13 @@
+{{ define "main" }}
+<div style="max-width:48rem;margin:0 auto;padding:3rem 1.5rem">
+  <a href="/" style="color:#515be3;font-size:0.875rem;display:inline-block;margin-bottom:2rem">&larr; Back to home</a>
+  <h1 style="font-size:2.25rem;font-weight:700;margin-bottom:3rem">{{ .Title }}</h1>
+  {{ range .Pages }}
+  <a href="{{ .Permalink }}" style="display:block;padding:1.5rem;border-radius:1rem;border:1px solid #374151;margin-bottom:1.5rem;text-decoration:none;color:inherit">
+    <h2 style="font-size:1.25rem;font-weight:600;margin-bottom:0.5rem">{{ .Title }}</h2>
+    {{ with .Params.description }}<p style="color:#9ca3af">{{ . }}</p>{{ end }}
+    {{ with .Date }}<time style="color:#6b7280;font-size:0.875rem;margin-top:0.75rem;display:block">{{ .Format "January 2, 2006" }}</time>{{ end }}
+  </a>
+  {{ end }}
+</div>
+{{ end }}

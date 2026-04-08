@@ -1,4 +1,5 @@
 ---
+type: "compliance"
 title: "Compliance Frameworks"
 description: "Map your AI governance to SOC 2, GDPR, HIPAA, EU AI Act, NIST AI RMF, and more. Built-in controls and audit-ready reporting."
 headline: "Compliance <span class=\"accent\">Built In.</span>"

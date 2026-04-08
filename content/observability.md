@@ -1,4 +1,5 @@
 ---
+type: "observability"
 title: "Observability"
 description: "Full audit trail for every AI interaction. Every prompt, response, and policy decision logged, retained, and queryable."
 headline: "Every Action. <span class=\"accent\">Logged.</span>"

@@ -1,6 +1,7 @@
 baseURL = "https://zentinelle.ai/"
 languageCode = "en-us"
 title = "Zentinelle — Runtime governance for AI agents"
+theme = "zentinelle"
 
 [params]
   description = "Zentinelle sits between your AI agents and their LLM providers — enforcing policies, logging every action, and surfacing a real-time compliance dashboard. No agent code changes required. Open source, MIT licensed."
@@ -10,6 +11,13 @@ title = "Zentinelle — Runtime governance for AI agents"
 
 [build]
   writeStats = true
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+
+ignoreLogs = ['warning-goldmark-raw-html']
 
 [minify]
   disableCSS = false
