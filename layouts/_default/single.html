@@ -11,7 +11,7 @@
   <link rel="canonical" href="{{ .Permalink }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Boldonse&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -28,6 +28,7 @@
       --muted:     #8888b0;
       --text:      #d0d0ef;
       --radius:    8px;
+      --container-width: 1280px;
     }
 
     html { scroll-behavior: smooth; }
@@ -110,48 +111,7 @@
 
     .btn-outline:hover { border-color: var(--teal); color: var(--teal); text-decoration: none; }
 
-    /* Page hero */
-    .page-hero {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 72px 24px 56px;
-      text-align: center;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 12px;
-      border: 1px solid var(--border);
-      border-radius: 99px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--teal);
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      margin-bottom: 24px;
-    }
-
-    h1 {
-      font-size: clamp(2rem, 4vw, 3rem);
-      font-weight: 700;
-      line-height: 1.15;
-      color: var(--white);
-      margin-bottom: 20px;
-      letter-spacing: -0.02em;
-    }
-
-    h1 .accent { color: var(--teal); }
-
-    .page-desc {
-      font-size: 1.1rem;
-      color: var(--muted);
-      max-width: 560px;
-      margin: 0 auto 36px;
-    }
-
-    .page-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    {{ partial "styles/hero.css" . | safeCSS }}
 
     /* Content */
     .content-wrap {
@@ -260,31 +220,12 @@
     .subnav-inner a:hover { color: var(--white); }
     .subnav-inner a.active { color: var(--teal); border-bottom-color: var(--teal); }
 
-    /* Footer */
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 40px 48px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 16px;
-    }
-
-    .footer-left { font-size: 0.875rem; color: var(--muted); }
-    .footer-left a { color: var(--muted); }
-    .footer-left a:hover { color: var(--teal); }
-
-    .footer-links { display: flex; gap: 24px; }
-    .footer-links a { font-size: 0.875rem; color: var(--muted); }
-    .footer-links a:hover { color: var(--teal); }
+    {{ partial "styles/footer.css" . | safeCSS }}
 
     @media (max-width: 768px) {
       nav { padding: 16px 20px; }
       .nav-links { display: none; }
-      .page-hero { padding: 48px 20px 40px; }
       .content-wrap { padding: 0 20px 64px; }
-      footer { padding: 32px 20px; }
       .subnav-inner { padding: 0 20px; }
     }
   </style>
@@ -323,33 +264,19 @@
   </div>
 </div>
 
-<div class="page-hero">
-  <div class="badge">ZENTINELLE</div>
-  <h1>{{ with .Params.headline }}{{ . | safeHTML }}{{ else }}{{ .Title }}{{ end }}</h1>
-  <p class="page-desc">{{ .Description }}</p>
-  {{ with .Params.cta_primary }}
-  <div class="page-actions">
-    <a href="{{ .link }}" class="btn btn-primary">{{ .label }}</a>
-    {{ with $.Params.cta_secondary }}<a href="{{ .link }}" class="btn btn-outline">{{ .label }}</a>{{ end }}
-  </div>
-  {{ end }}
-</div>
+{{ partial "site-hero.html" (dict
+  "badge_html" "ZENTINELLE"
+  "title" (or .Params.headline .Title)
+  "description" .Description
+  "primary_action" .Params.cta_primary
+  "secondary_action" .Params.cta_secondary
+) }}
 
 <div class="content-wrap">
   {{ .Content }}
 </div>
 
-<footer>
-  <div class="footer-left">
-    <a href="/">Zentinelle</a> — open source AI agent governance. MIT licensed.
-  </div>
-  <div class="footer-links">
-    <a href="{{ .Site.Params.github }}" target="_blank" rel="noopener">GitHub</a>
-    <a href="{{ .Site.Params.docs }}" target="_blank" rel="noopener">Docs</a>
-    <a href="{{ .Site.Params.sdk }}" target="_blank" rel="noopener">SDK</a>
-    <a href="https://calliope.ai" target="_blank" rel="noopener">Calliope AI</a>
-  </div>
-</footer>
+{{ partial "site-footer.html" (dict "context" .) }}
 
 </body>
 </html>

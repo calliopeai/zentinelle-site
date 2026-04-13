@@ -12,7 +12,7 @@
   <link rel="canonical" href="{{ .Site.BaseURL }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Boldonse&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Sora:wght@300;400;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -29,6 +29,7 @@
       --muted:     #8888b0;
       --text:      #d0d0ef;
       --radius:    8px;
+      --container-width: 1280px;
     }
 
     html { scroll-behavior: smooth; }
@@ -55,42 +56,64 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 20px 48px;
-      border-bottom: 1px solid var(--border);
+      gap: 24px;
+      padding: 20px 24px;
       position: sticky;
       top: 0;
-      background: rgba(7, 7, 26, 0.92);
+      background: rgba(11, 11, 25, 0.7);
       backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       z-index: 100;
     }
+
+    @media (min-width: 768px) { nav { padding-left: 40px; padding-right: 40px; } }
+    @media (min-width: 1024px) { nav { padding-left: 60px; padding-right: 60px; } }
 
     .nav-logo {
       display: flex;
       align-items: center;
-      gap: 10px;
-      font-weight: 700;
-      font-size: 1.1rem;
-      color: var(--white);
+      flex-shrink: 0;
       text-decoration: none;
     }
 
-    .nav-logo svg { flex-shrink: 0; }
+    .nav-logo img { display: block; }
 
     .nav-links {
       display: flex;
       align-items: center;
-      gap: 32px;
+      gap: 2px;
       list-style: none;
     }
 
     .nav-links a {
-      color: var(--muted);
-      font-size: 0.9rem;
-      font-weight: 500;
-      transition: color 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      border-radius: 10px;
+      color: #fff;
+      font-family: 'Sora', sans-serif;
+      font-size: 15px;
+      font-weight: 400;
+      white-space: nowrap;
+      transition: background 0.2s;
+      text-decoration: none;
     }
 
-    .nav-links a:hover { color: var(--white); text-decoration: none; }
+    .nav-links a:hover { background: rgba(255,255,255,0.05); text-decoration: none; color: #fff; }
+
+    .nav-links a.active { font-weight: 700; }
+
+    .nav-dot {
+      width: 8px;
+      height: 8px;
+      background: #37efed;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: none;
+    }
+
+    .nav-links a.active .nav-dot { display: block; }
 
     .btn {
       display: inline-flex;
@@ -108,116 +131,37 @@
     .btn-primary {
       background: var(--teal);
       color: #07071a;
+      transition: all 0.3s ease-out;
     }
 
     .btn-primary:hover {
-      background: #5ff8f6;
+      background: #fff;
+      box-shadow: 0 0 0 4px rgba(55,239,237,0.4);
+      transform: scale(1.04);
       text-decoration: none;
     }
 
     .btn-outline {
-      border: 1px solid var(--border);
-      color: var(--text);
+      border: 1px solid #ccccd8;
+      color: var(--white);
       background: transparent;
+      transition: all 0.2s ease-out;
     }
 
     .btn-outline:hover {
-      border-color: var(--teal);
-      color: var(--teal);
+      border-color: #fff;
+      background: rgba(255,255,255,0.05);
+      transform: scale(1.02);
       text-decoration: none;
-    }
-
-    /* ─── Hero ─── */
-    .hero {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 96px 24px 80px;
-      text-align: center;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 12px;
-      border: 1px solid var(--border);
-      border-radius: 99px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--teal);
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      margin-bottom: 28px;
-    }
-
-    .badge-dot {
-      width: 6px;
-      height: 6px;
-      background: #f59e0b;
-      border-radius: 50%;
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
-    }
-
-    h1 {
-      font-size: clamp(2.2rem, 5vw, 3.5rem);
-      font-weight: 700;
-      line-height: 1.1;
       color: var(--white);
-      margin-bottom: 20px;
-      letter-spacing: -0.02em;
     }
 
-    h1 .accent { color: var(--teal); }
+    {{ partial "styles/hero.css" . | safeCSS }}
+    {{ partial "styles/section-architecture.css" . | safeCSS }}
 
-    .hero-sub {
-      font-size: 1.15rem;
-      color: var(--muted);
-      max-width: 600px;
-      margin: 0 auto 40px;
-    }
-
-    .hero-actions {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-bottom: 40px;
-    }
-
-    .install-strip {
-      display: flex;
-      gap: 16px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    .install-cmd {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 16px;
-      background: var(--bg-code);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.8rem;
-      color: var(--teal);
-      cursor: pointer;
-      transition: border-color 0.2s;
-    }
-
-    .install-cmd:hover { border-color: var(--teal); }
-
-    .install-cmd .prompt { color: var(--muted); }
-
-    /* ─── Architecture ─── */
+    /* ─── Shared section layout ─── */
     .section {
-      max-width: 900px;
+      max-width: var(--container-width);
       margin: 0 auto;
       padding: 64px 24px;
     }
@@ -232,103 +176,23 @@
     }
 
     h2 {
-      font-size: clamp(1.5rem, 3vw, 2rem);
-      font-weight: 700;
+      font-family: 'Boldonse', 'Inter', sans-serif;
+      font-size: clamp(2rem, 3vw, 42px);
+      font-style: normal;
+      font-weight: 400;
+      line-height: 1.55;
       color: var(--white);
       margin-bottom: 16px;
-      letter-spacing: -0.01em;
+      letter-spacing: 0;
     }
+
+    h2 .accent { color: #3FF1EF; }
 
     .section-desc {
       color: var(--muted);
       margin-bottom: 40px;
       max-width: 560px;
     }
-
-    .arch-diagram {
-      background: var(--bg-code);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 32px 40px;
-      margin-bottom: 32px;
-      text-align: center;
-    }
-
-    .arch-row {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-
-    .arch-box {
-      padding: 12px 20px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      font-size: 0.875rem;
-      font-weight: 500;
-    }
-
-    .arch-box.highlight {
-      border-color: var(--teal);
-      background: var(--teal-glow);
-      color: var(--teal);
-    }
-
-    .arch-arrow {
-      color: var(--muted);
-      font-size: 1.2rem;
-    }
-
-    .arch-note {
-      margin-top: 20px;
-      font-size: 0.8rem;
-      color: var(--muted);
-    }
-
-    .arch-note span {
-      display: inline-block;
-      margin: 2px 8px;
-      color: var(--teal);
-    }
-
-    /* ─── Two-column modes ─── */
-    .modes-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-    }
-
-    @media (max-width: 640px) { .modes-grid { grid-template-columns: 1fr; } }
-
-    .mode-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 28px;
-    }
-
-    .mode-card h3 {
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--white);
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .mode-card .mode-tag {
-      font-size: 0.7rem;
-      padding: 2px 8px;
-      border-radius: 99px;
-      background: var(--teal-dim);
-      color: var(--teal);
-      font-weight: 600;
-    }
-
-    .mode-card p { font-size: 0.875rem; color: var(--muted); margin-bottom: 16px; }
 
     pre.code-block {
       background: var(--bg-code);
@@ -346,43 +210,124 @@
     pre.code-block .cmt { color: #4a4a7a; }
 
     /* ─── Features ─── */
+    .features-section {
+      padding-top: 56px;
+      padding-bottom: 56px;
+    }
+
+    .features-panel {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 28px 28px 12px;
+    }
+
+    .features-head {
+      max-width: 720px;
+      margin: 0 auto 28px;
+      text-align: center;
+    }
+
+    .features-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3px 10px;
+      margin-bottom: 18px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(63, 241, 239, 0.12);
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--teal);
+    }
+
+    .features-head h2 {
+      margin-bottom: 14px;
+      text-align: center;
+    }
+
+    .features-head .section-desc {
+      max-width: 520px;
+      margin: 0 auto 18px;
+      text-align: center;
+      font-size: 0.95rem;
+      line-height: 1.45;
+    }
+
+    .feature-actions {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .feature-actions .btn {
+      padding: 8px 14px;
+      font-size: 0.72rem;
+    }
+
     .features-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
     }
 
     .feature-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
+      background: rgba(20, 20, 38, 0.72);
+      border: 1px solid rgba(255, 255, 255, 0.14);
       border-radius: var(--radius);
-      padding: 24px;
-      transition: border-color 0.2s;
+      padding: 18px 16px 16px;
+      min-height: 144px;
+      text-align: center;
+      transition: border-color 0.2s, transform 0.2s, background 0.2s;
     }
 
-    .feature-card:hover { border-color: var(--teal); }
+    .feature-card:hover {
+      border-color: rgba(63, 241, 239, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .feature-card.featured {
+      background: #f4f1ec;
+      border-color: rgba(255, 255, 255, 0.24);
+    }
 
     .feature-icon {
-      width: 36px;
-      height: 36px;
-      background: var(--teal-dim);
-      border-radius: 8px;
+      width: 20px;
+      height: 20px;
+      background: var(--teal);
+      border-radius: 5px;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 14px;
-      color: var(--teal);
-      font-size: 1rem;
+      margin: 0 auto 14px;
+      color: #07071a;
+      font-size: 0.7rem;
+      font-weight: 700;
     }
 
     .feature-card h3 {
       font-size: 0.95rem;
-      font-weight: 600;
+      font-weight: 700;
       color: var(--white);
-      margin-bottom: 6px;
+      margin-bottom: 8px;
+      line-height: 1.38;
     }
 
-    .feature-card p { font-size: 0.82rem; color: var(--muted); }
+    .feature-card p {
+      font-size: 0.7rem;
+      line-height: 1.35;
+      color: rgba(208, 208, 239, 0.72);
+      max-width: 260px;
+      margin: 0 auto;
+    }
+
+    .feature-card.featured h3 { color: #11111f; }
+    .feature-card.featured p { color: rgba(17, 17, 31, 0.68); }
 
     /* ─── Status section ─── */
     .status-grid {
@@ -469,45 +414,7 @@
       border-radius: 99px;
     }
 
-    /* ─── CTA banner ─── */
-    .cta-banner {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-top: 1px solid var(--teal);
-      border-radius: var(--radius);
-      padding: 48px;
-      text-align: center;
-      margin: 0 24px 80px;
-      max-width: 852px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    .cta-banner h2 { margin-bottom: 12px; }
-
-    .cta-banner p { color: var(--muted); margin-bottom: 28px; }
-
-    /* ─── Footer ─── */
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 32px 48px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: gap;
-      gap: 16px;
-    }
-
-    .footer-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .footer-left a { color: var(--muted); font-size: 0.82rem; }
-    .footer-left a:hover { color: var(--teal); text-decoration: none; }
-
-    .footer-right { font-size: 0.82rem; color: var(--muted); }
+    {{ partial "styles/footer.css" . | safeCSS }}
 
     .divider {
       border: none;
@@ -518,33 +425,44 @@
     @media (max-width: 768px) {
       nav { padding: 16px 20px; }
       .nav-links { display: none; }
-      .hero { padding: 60px 20px 48px; }
       .section { padding: 48px 20px; }
-      footer { padding: 24px 20px; flex-direction: column; align-items: flex-start; }
-      .cta-banner { padding: 32px 20px; margin: 0 20px 60px; }
+    }
+
+    @media (max-width: 900px) {
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .features-panel {
+        padding: 24px 18px 18px;
+      }
     }
   </style>
 </head>
 <body>
 
+<!-- ─── Background effects ─── -->
+<div aria-hidden="true" style="position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;">
+  <!-- grid -->
+  <div style="position:absolute;inset:0;background:linear-gradient(rgba(255,255,255,0.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.045) 1px,transparent 1px);background-size:48px 48px;-webkit-mask-image:linear-gradient(to bottom,rgba(0,0,0,0.5) 0%,rgba(0,0,0,0) 88%);mask-image:linear-gradient(to bottom,rgba(0,0,0,0.5) 0%,rgba(0,0,0,0) 88%);"></div>
+  <!-- teal glow -->
+  <div style="position:absolute;left:50%;top:10%;transform:translateX(-50%);width:min(800px,100vw);height:min(800px,100vw);background:radial-gradient(ellipse at center,rgba(55,239,237,0.13) 0%,rgba(55,239,237,0.04) 40%,transparent 70%);filter:blur(40px);"></div>
+</div>
+
 <!-- ─── Nav ─── -->
 <nav>
   <a class="nav-logo" href="/">
-    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-      <rect width="28" height="28" rx="6" fill="rgba(63,241,239,0.1)"/>
-      <path d="M7 14L12 9L17 14L22 9" stroke="#3FF1EF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M7 19L12 14L17 19L22 14" stroke="#3FF1EF" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"/>
-    </svg>
-    Zentinelle
+    <img src="/logo.svg" alt="Zentinelle" width="220" height="58" style="object-fit:contain;">
   </a>
   <ul class="nav-links">
-    <li><a href="#how-it-works">How it works</a></li>
-    <li><a href="#features">Features</a></li>
-    <li><a href="/governance/">Governance</a></li>
-    <li><a href="/risk/">Risk</a></li>
-    <li><a href="/observability/">Observability</a></li>
-    <li><a href="https://zentinelle.dev/wiki/sdk/">Docs</a></li>
-    <li><a href="https://github.com/calliopeai/zentinelle">GitHub</a></li>
+    <li><a href="#" data-section="hero"><span class="nav-dot"></span>Start</a></li>
+    <li><a href="#how-it-works" data-section="how-it-works"><span class="nav-dot"></span>How it works</a></li>
+    <li><a href="#features" data-section="features"><span class="nav-dot"></span>Features</a></li>
+    <li><a href="/governance/"><span class="nav-dot"></span>Governance</a></li>
+    <li><a href="/risk/"><span class="nav-dot"></span>Risk</a></li>
+    <li><a href="/observability/"><span class="nav-dot"></span>Observability</a></li>
+    <li><a href="https://zentinelle.dev/wiki/sdk/"><span class="nav-dot"></span>Docs</a></li>
+    <li><a href="https://github.com/calliopeai/zentinelle"><span class="nav-dot"></span>GitHub</a></li>
   </ul>
   <a class="btn btn-primary" href="https://github.com/calliopeai/zentinelle" style="font-size:0.82rem;padding:8px 16px;">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
@@ -553,132 +471,88 @@
 </nav>
 
 <!-- ─── Hero ─── -->
-<section class="hero">
-  <div class="badge">
-    <span class="badge-dot"></span>
-    v0.0.1 alpha &nbsp;·&nbsp; MIT License &nbsp;·&nbsp; Actively developed
-  </div>
-  <h1>Runtime governance<br>for <span class="accent">AI agents.</span></h1>
-  <p class="hero-sub">
-    Zentinelle sits between your AI agents and their LLM providers — enforcing policies, logging every action, and surfacing a real-time compliance dashboard. No agent code changes required.
-  </p>
-  <div class="hero-actions">
-    <a class="btn btn-primary" href="https://github.com/calliopeai/zentinelle">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
-      Get Started on GitHub
-    </a>
-    <a class="btn btn-outline" href="https://zentinelle.dev/wiki/sdk/">Read the Docs</a>
-    <a class="btn btn-outline" href="https://github.com/calliopeai/zentinelle-sdk">SDK →</a>
-  </div>
-  <div class="install-strip">
-    <div class="install-cmd">
-      <span class="prompt">$</span> pip install zentinelle
-    </div>
-    <div class="install-cmd">
-      <span class="prompt">$</span> npm install zentinelle
-    </div>
-  </div>
-</section>
-
-<hr class="divider" style="max-width:860px;margin:0 auto;">
+{{ partial "site-hero.html" (dict
+  "badge_html" "v0.0.1 alpha &nbsp;·&nbsp; MIT License &nbsp;·&nbsp; Actively developed"
+  "title" (.Params.headline | default "Runtime governance<br>for <span class=\"accent\">AI agents.</span>")
+  "description" (.Description | default "Zentinelle sits between your AI agents &amp; their LLM providers")
+  "bullets" (slice "enforcing policies" "logging every action" "real-time compliance dashboard")
+  "primary_action" (dict
+    "href" .Site.Params.github
+    "label" "Get Started on GitHub"
+    "class" "btn btn-primary"
+    "icon_html" `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>`
+  )
+  "secondary_action" (dict
+    "href" "https://zentinelle.dev/wiki/sdk/"
+    "label" "Read the Docs"
+    "class" "btn btn-outline"
+  )
+  "tertiary_action" (dict
+    "href" .Site.Params.sdk
+    "label" "SDK →"
+    "class" "btn btn-outline"
+  )
+) }}
 
 <!-- ─── How it works ─── -->
-<section class="section" id="how-it-works">
-  <div class="section-label">Architecture</div>
-  <h2>In the middle of everything.<br>Invisible to your agents.</h2>
-  <p class="section-desc">Zentinelle intercepts every LLM call and tool use — applying your policies in real time, logging results, and reporting compliance. Your agents keep running unchanged.</p>
+{{ partial "section-architecture.html" . }}
 
-  <div class="arch-diagram">
-    <div class="arch-row">
-      <div class="arch-box">Your Agent<br><small style="color:var(--muted);font-size:0.75rem;">Claude Code · Codex · Gemini · Custom</small></div>
-      <div class="arch-arrow">→</div>
-      <div class="arch-box highlight"><strong>Zentinelle</strong><br><small style="font-size:0.75rem;">policy check · audit log · monitoring</small></div>
-      <div class="arch-arrow">→</div>
-      <div class="arch-box">LLM Provider<br><small style="color:var(--muted);font-size:0.75rem;">Anthropic · OpenAI · Google</small></div>
-    </div>
-    <p class="arch-note">
-      Policies enforced:<span>rate limits</span><span>tool permissions</span><span>PII detection</span><span>model restrictions</span><span>cost controls</span>
-    </p>
-  </div>
-
-  <div class="modes-grid">
-    <div class="mode-card">
-      <h3>Hook mode <span class="mode-tag">Claude Code · Gemini CLI</span></h3>
-      <p>Native PreToolUse / PostToolUse intercepts. Zero proxy overhead. Works with agents that support hook APIs.</p>
-      <pre class="code-block"><span class="cmt"># .claude/settings.json</span>
-{
-  <span class="str">"hooks"</span>: {
-    <span class="str">"PreToolUse"</span>: [{
-      <span class="str">"matcher"</span>: <span class="str">"*"</span>,
-      <span class="str">"hooks"</span>: [{
-        <span class="str">"type"</span>: <span class="str">"command"</span>,
-        <span class="str">"command"</span>: <span class="str">"zentinelle hook"</span>
-      }]
-    }]
-  }
-}</pre>
-    </div>
-    <div class="mode-card">
-      <h3>Proxy mode <span class="mode-tag">Any agent</span></h3>
-      <p>Transparent HTTP proxy. Point your agent at Zentinelle instead of the LLM directly. No code changes, no SDK required.</p>
-      <pre class="code-block"><span class="cmt"># Route any agent through Zentinelle</span>
-<span class="kw">export</span> ANTHROPIC_BASE_URL=\
-  http://localhost:8080/proxy/anthropic/
-
-<span class="cmt"># All LLM calls now go through governance</span>
-<span class="cmt"># Policies enforced. Every call logged.</span></pre>
-    </div>
-  </div>
-</section>
-
-<hr class="divider" style="max-width:860px;margin:0 auto;">
+<hr class="divider" style="max-width:var(--container-width);margin:0 auto;">
 
 <!-- ─── Features ─── -->
-<section class="section" id="features">
-  <div class="section-label">Capabilities</div>
-  <h2>What Zentinelle gives you.</h2>
-  <p class="section-desc">Policy enforcement, observability, compliance, and enterprise resilience — all in one runtime layer.</p>
+<section class="section features-section" id="features">
+  <div class="features-panel">
+    <div class="features-head">
+      <div class="features-pill">Capabilities</div>
+      <h2>What Zentinelle <span class="accent">gives you.</span></h2>
+      <p class="section-desc">Policy enforcement, observability, compliance, and enterprise resilience — all in one runtime layer.</p>
+      <div class="feature-actions">
+        <a class="btn btn-primary" href="{{ .Site.Params.github }}">Get started on GitHub</a>
+        <a class="btn btn-outline" href="https://github.com/calliopeai/zentinelle/issues">Contact us</a>
+      </div>
+    </div>
 
-  <div class="features-grid">
-    <div class="feature-card">
-      <div class="feature-icon">⚡</div>
+    <div class="features-grid">
+    <div class="feature-card featured">
+      <div class="feature-icon">•</div>
       <h3>Policy Enforcement</h3>
       <p>Rate limits, cost controls, tool allowlists/blocklists, model restrictions, PII detection and masking, human-in-the-loop approvals.</p>
     </div>
     <div class="feature-card">
-      <div class="feature-icon">👁</div>
+      <div class="feature-icon">•</div>
       <h3>Real-time Observability</h3>
       <p>Every tool call, every LLM invocation — visible in the dashboard. Token usage, latency, error rates, and agent behavior in one place.</p>
     </div>
     <div class="feature-card">
-      <div class="feature-icon">📋</div>
+      <div class="feature-icon">•</div>
       <h3>Compliance Frameworks</h3>
       <p>Built-in dashboards for SOC2, GDPR, HIPAA, EU AI Act, and NIST AI RMF. Audit trails that satisfy reviewers without manual work.</p>
     </div>
     <div class="feature-card">
-      <div class="feature-icon">🔒</div>
+      <div class="feature-icon">•</div>
       <h3>Audit Logging</h3>
       <p>Immutable logs of every agent action, policy decision, and LLM response. Know exactly what your agents did and why it was allowed.</p>
     </div>
     <div class="feature-card">
-      <div class="feature-icon">🔁</div>
+      <div class="feature-icon">•</div>
       <h3>Enterprise Resilience</h3>
       <p>Circuit breaker pattern, retry with exponential backoff, fail-open mode for non-critical paths, event buffering and batching.</p>
     </div>
     <div class="feature-card">
-      <div class="feature-icon">🤝</div>
+      <div class="feature-icon">•</div>
       <h3>Multi-agent Support</h3>
       <p>Track Claude Code, Codex, Gemini CLI, and custom agents side-by-side. One governance layer for your entire AI agent fleet.</p>
+    </div>
     </div>
   </div>
 </section>
 
-<hr class="divider" style="max-width:860px;margin:0 auto;">
+<hr class="divider" style="max-width:var(--container-width);margin:0 auto;">
 
 <!-- ─── Status ─── -->
 <section class="section" id="status">
   <div class="section-label">Project Status</div>
-  <h2>Alpha. Honest about it.</h2>
+  <h2><span class="accent">Alpha.</span> Honest about it.</h2>
   <p class="section-desc">Zentinelle is early. We're shipping fast, we want contributors, and we're looking for teams who want to help shape what AI agent governance looks like.</p>
 
   <div class="status-grid">
@@ -729,12 +603,12 @@
   </div>
 </section>
 
-<hr class="divider" style="max-width:860px;margin:0 auto;">
+<hr class="divider" style="max-width:var(--container-width);margin:0 auto;">
 
 <!-- ─── Quick start ─── -->
 <section class="section">
   <div class="section-label">Quick start</div>
-  <h2>Up in five minutes.</h2>
+  <h2>Up in <span class="accent">five minutes.</span></h2>
   <p class="section-desc">Clone the repo, run Docker Compose, point your agent at the proxy. That's it.</p>
 
   <pre class="code-block" style="border-radius:var(--radius);padding:24px;margin-bottom:20px;font-size:0.82rem;">
@@ -758,35 +632,57 @@ docker compose exec backend python manage.py createsuperuser
 <span class="cmt"># Every LLM call is now governed. Dashboard: http://localhost:8080</span></pre>
 </section>
 
-<!-- ─── CTA Banner ─── -->
-<div class="cta-banner">
-  <h2>Early stage. Shaped by contributors.</h2>
-  <p>We're building AI agent governance in the open. If you're deploying agents and need observability and policy enforcement — we want to hear from you.</p>
-  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-    <a class="btn btn-primary" href="https://github.com/calliopeai/zentinelle">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
-      Star on GitHub
-    </a>
-    <a class="btn btn-outline" href="https://github.com/calliopeai/zentinelle/issues">Open an Issue</a>
-    <a class="btn btn-outline" href="https://github.com/calliopeai/zentinelle-sdk">View the SDK</a>
-  </div>
-</div>
-
 <!-- ─── Footer ─── -->
-<footer>
-  <div class="footer-left">
-    <a href="https://github.com/calliopeai/zentinelle">GitHub</a>
-    <span style="color:var(--border)">·</span>
-    <a href="https://zentinelle.dev/wiki/sdk/">Docs</a>
-    <span style="color:var(--border)">·</span>
-    <a href="https://github.com/calliopeai/zentinelle-sdk">SDK</a>
-    <span style="color:var(--border)">·</span>
-    <a href="https://calliope.ai">Calliope AI</a>
-  </div>
-  <div class="footer-right">
-    MIT License &nbsp;·&nbsp; Built by <a href="https://calliope.ai" style="color:var(--muted)">Calliope Labs</a>
-  </div>
-</footer>
+{{ partial "site-footer.html" (dict "context" .) }}
 
+<script src="/js/particle-field.js"></script>
+<script>
+(function () {
+  var path = window.location.pathname.replace(/\/$/, '') || '/';
+  var links = document.querySelectorAll('.nav-links a');
+
+  function setActive(el) {
+    links.forEach(function (a) { a.classList.remove('active'); });
+    if (el) el.classList.add('active');
+  }
+
+  // Path-based active for page links
+  links.forEach(function (a) {
+    var href = a.getAttribute('href');
+    if (!href || href.startsWith('#') || href.startsWith('http')) return;
+    var hPath = href.replace(/\/$/, '') || '/';
+    if (path === hPath) setActive(a);
+  });
+
+  // Section-based active via IntersectionObserver for hash links
+  var sectionLinks = document.querySelectorAll('.nav-links a[data-section]');
+  if (sectionLinks.length === 0) return;
+
+  // Default: activate "Start" on page load
+  var startLink = document.querySelector('.nav-links a[data-section="hero"]');
+  if (startLink) setActive(startLink);
+
+  var activeSection = null;
+
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        activeSection = entry.target.id;
+        var match = null;
+        sectionLinks.forEach(function (a) {
+          if (a.getAttribute('data-section') === activeSection) match = a;
+        });
+        setActive(match);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '-64px 0px 0px 0px' });
+
+  sectionLinks.forEach(function (a) {
+    var id = a.getAttribute('data-section');
+    var el = document.getElementById(id);
+    if (el) observer.observe(el);
+  });
+})();
+</script>
 </body>
 </html>

@@ -1,0 +1,53 @@
+<section id="hero" class="hero{{ with .class }} {{ . }}{{ end }}">
+  <main class="hero-content">
+    {{ with .badge_html }}
+    <div class="badge">{{ . | safeHTML }}</div>
+    {{ end }}
+
+    <div class="hero-headings">
+      <h1 class="hero-title">{{ .title | safeHTML }}</h1>
+
+      {{ with .description }}
+      <p class="hero-sub">{{ . }}</p>
+      {{ end }}
+    </div>
+
+    {{ with .bullets }}
+    <div class="hero-bullets">
+      {{ range . }}
+      <div class="hero-bullet">
+        <span class="hero-bullet-dot"></span>
+        <span class="hero-bullet-text">{{ . }}</span>
+      </div>
+      {{ end }}
+    </div>
+    {{ end }}
+
+    {{ if or .primary_action .secondary_action .tertiary_action }}
+    <div class="hero-actions">
+      {{ with .primary_action }}
+      <a class="{{ .class | default "btn btn-primary" }}" href="{{ .href | default .link }}"{{ with .target }} target="{{ . }}" rel="noopener"{{ end }}>
+        {{ with .icon_html }}{{ . | safeHTML }}{{ end }}
+        {{ .label }}
+      </a>
+      {{ end }}
+      {{ with .secondary_action }}
+      <a class="{{ .class | default "btn btn-outline" }}" href="{{ .href | default .link }}"{{ with .target }} target="{{ . }}" rel="noopener"{{ end }}>
+        {{ with .icon_html }}{{ . | safeHTML }}{{ end }}
+        {{ .label }}
+      </a>
+      {{ end }}
+      {{ with .tertiary_action }}
+      <a class="{{ .class | default "btn btn-outline" }}" href="{{ .href | default .link }}"{{ with .target }} target="{{ . }}" rel="noopener"{{ end }}>
+        {{ with .icon_html }}{{ . | safeHTML }}{{ end }}
+        {{ .label }}
+      </a>
+      {{ end }}
+    </div>
+    {{ end }}
+  </main>
+
+  <div class="hero-visual" aria-hidden="true">
+    <canvas id="particle-field" width="560" height="540"></canvas>
+  </div>
+</section>
