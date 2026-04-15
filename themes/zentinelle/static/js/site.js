@@ -389,10 +389,14 @@
       var el = document.getElementById("contact");
       if (!el) return;
       e.preventDefault();
-      var top = 0;
-      var node = el;
-      while (node) { top += node.offsetTop; node = node.offsetParent; }
-      window.scrollTo({ top: top, behavior: "smooth" });
+      if (window.__lenis) {
+        window.__lenis.scrollTo(el, { offset: 0 });
+      } else {
+        var top = 0;
+        var node = el;
+        while (node) { top += node.offsetTop; node = node.offsetParent; }
+        window.scrollTo({ top: top, behavior: "smooth" });
+      }
     });
   }
 
@@ -614,8 +618,12 @@
     function scrollToSection(sectionId) {
       var el = document.getElementById(sectionId);
       if (!el) return;
-      var top = getAbsoluteTop(el);
-      window.scrollTo({ top: top, behavior: "smooth" });
+      if (window.__lenis) {
+        window.__lenis.scrollTo(el, { offset: 0 });
+      } else {
+        var top = getAbsoluteTop(el);
+        window.scrollTo({ top: top, behavior: "smooth" });
+      }
     }
 
     /* --- mobile menu toggle --- */
@@ -865,7 +873,11 @@
     }, { passive: true });
 
     btn.addEventListener("click", function () {
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      if (window.__lenis) {
+        window.__lenis.scrollTo(0, { offset: 0 });
+      } else {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
     });
 
     /* initial state */
