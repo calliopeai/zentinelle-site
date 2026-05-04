@@ -1,0 +1,32 @@
+{{- /* Required: label. Optional: iconHTML, class, spanClass, style, spanStyle, variant ("hero"|"section"|"card"). */ -}}
+{{- $variant := default "section" .variant -}}
+{{- $class := .class -}}
+{{- if not $class -}}
+  {{- if eq $variant "hero" -}}
+    {{- $class = "flex items-center gap-[6px] px-[12px] py-[5px] rounded-[200px]" -}}
+  {{- else if eq $variant "card" -}}
+    {{- $class = "self-start flex items-center gap-[6px] px-[10px] py-[4px] rounded-[200px]" -}}
+  {{- else -}}
+    {{- $class = "self-start flex items-center gap-[6px] px-[10px] py-[4px] rounded-[200px]" -}}
+  {{- end -}}
+{{- end -}}
+{{- $style := .style -}}
+{{- if not $style -}}
+  {{- if eq $variant "hero" -}}
+    {{- $style = "background:rgba(55,239,237,0.1);border:1px solid rgba(55,239,237,0.2)" -}}
+  {{- else if eq $variant "card" -}}
+    {{- $style = "background:rgba(55,239,237,0.08);border:1px solid rgba(55,239,237,0.18)" -}}
+  {{- else -}}
+    {{- $style = "background:rgba(217,217,217,0.1)" -}}
+  {{- end -}}
+{{- end -}}
+{{- $spanClass := default "text-[#37efed] text-[12px] leading-normal uppercase" .spanClass -}}
+{{- if eq $variant "hero" -}}
+  {{- $spanClass = default "text-[#37efed] text-[12px] leading-normal uppercase tracking-wide" .spanClass -}}
+{{- else if eq $variant "card" -}}
+  {{- $spanClass = default "text-[#37efed]/80 text-[11px] leading-normal uppercase tracking-wide" .spanClass -}}
+{{- end -}}
+{{- $spanStyle := default "font-family:var(--font-sora), sans-serif;font-weight:400" .spanStyle -}}
+<div class="{{ $class }}"{{ with $style }} style="{{ . | safeCSS }}"{{ end }}>
+{{- with .iconHTML }}{{ . }}{{ end -}}
+<span class="{{ $spanClass }}" style="{{ $spanStyle | safeCSS }}">{{ .label }}</span></div>

@@ -1,0 +1,19 @@
+{{- $page := .page -}}
+{{- $ctas := slice -}}
+{{- with $page.Params.cta_primary -}}
+  {{- if and .label .link -}}
+    {{- $ctas = $ctas | append (dict "href" .link "label" .label "variant" "secondary" "external" (hasPrefix .link "http")) -}}
+  {{- end -}}
+{{- end -}}
+{{- with $page.Params.cta_secondary -}}
+  {{- if and .label .link -}}
+    {{- $ctas = $ctas | append (dict "href" .link "label" .label "variant" "primary" "external" (hasPrefix .link "http") "icon" true "iconSize" 20) -}}
+  {{- end -}}
+{{- end -}}
+{{ partial "feature-hero.html" (dict
+  "badgeLabel" (default $page.Title .badgeLabel)
+  "badgeIcon" .badgeIcon
+  "headlineHTML" (safeHTML (default $page.Title $page.Params.headline))
+  "description" (default $page.Description $page.Params.description)
+  "ctas" $ctas
+) }}

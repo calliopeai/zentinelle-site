@@ -1,0 +1,5 @@
+{{- if eq .layout "split-callout" -}}
+  {{- partial "feature-split-callout.html" . -}}
+{{- else if eq .layout "card-grid" -}}
+  {{- partial "feature-card-grid.html" . -}}
+{{- end -}}

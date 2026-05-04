@@ -1,0 +1,21 @@
+{{- /* Required: href, label. Optional: variant ("primary"|"secondary"|"dark"|"plain"), external, icon, iconSize, class, style. */ -}}
+{{- $variant := default "secondary" .variant -}}
+{{- $class := .class -}}
+{{- if not $class -}}
+  {{- if eq $variant "primary" -}}
+    {{- $class = "inline-flex items-center justify-center gap-[10px] px-[14px] py-[10px] rounded-[10px] text-[14px] leading-normal whitespace-nowrap bg-[#37efed] text-[#0b0b19] ring-0 ring-[#37efed]/0 hover:bg-white hover:ring-4 hover:ring-[#37efed]/40 hover:scale-[1.04] transition-all duration-300 ease-out " -}}
+  {{- else if eq $variant "dark" -}}
+    {{- $class = "self-start inline-flex items-center justify-center gap-[8px] px-[18px] py-[11px] rounded-[10px] text-[14px] leading-normal bg-[#0d0d0d] text-white hover:bg-[#1e1e2e] transition-colors duration-200 disabled:opacity-60" -}}
+  {{- else if eq $variant "plain" -}}
+    {{- $class = "flex items-center gap-[10px] w-full px-[14px] py-[11px] rounded-[10px] bg-[#37efed] text-[#0b0b19] text-[14px] font-medium justify-center" -}}
+  {{- else -}}
+    {{- $class = "inline-flex items-center justify-center gap-[10px] px-[14px] py-[10px] rounded-[10px] text-[14px] leading-normal whitespace-nowrap border border-[#ccccd8] text-white hover:border-white hover:bg-white/5 hover:scale-[1.02] transition-all duration-200 ease-out " -}}
+  {{- end -}}
+{{- end -}}
+{{- $style := default "font-family:var(--font-sora), sans-serif;font-weight:400" .style -}}
+{{- $iconSize := default 24 .iconSize -}}
+<a href="{{ .href }}"{{ if .external }} target="_blank" rel="noopener noreferrer"{{ end }} class="{{ $class }}" style="{{ $style | safeCSS }}">
+{{- if .icon -}}
+<div class="relative w-[{{ $iconSize }}px] h-[{{ $iconSize }}px]"><img alt="" loading="lazy" decoding="async" style="position:absolute;height:100%;width:100%;left:0;top:0;right:0;bottom:0;object-fit:contain;color:transparent" src="/8a6189145bcfc742136a3ae10f734c41207d4a55.svg"/></div>
+{{- end -}}
+{{ .label }}</a>

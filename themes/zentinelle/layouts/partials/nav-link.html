@@ -1,0 +1,16 @@
+{{- /* Required: href, label, mode ("desktop"|"mobile"). Optional: active, external. */ -}}
+{{- $isMobile := eq .mode "mobile" -}}
+{{- $class := cond $isMobile "flex items-center gap-[10px] px-[12px] py-[12px] rounded-[10px] text-[15px] transition-colors hover:bg-white/5" "flex items-center gap-[10px] px-[10px] py-[10px] rounded-[10px] text-[15px] leading-normal whitespace-nowrap transition-colors duration-200 hover:bg-white/5" -}}
+{{- if .active -}}
+  {{- $class = cond $isMobile "flex items-center gap-[10px] px-[12px] py-[12px] rounded-[10px] transition-colors bg-white/5" "flex items-center gap-[10px] px-[10px] py-[10px] rounded-[10px] transition-colors duration-200 " -}}
+{{- end -}}
+<a href="{{ .href }}"{{ if .external }} target="_blank" rel="noopener noreferrer"{{ end }} class="{{ $class }}"{{ if not .active }} style="font-family:var(--font-sora), sans-serif;font-weight:400"{{ end }}>
+{{- if .active -}}
+<img alt="" loading="lazy" width="8" height="8" decoding="async" class="shrink-0 active-dot" style="color:transparent" src="/bb66de66bee7ad3628b9dc976894505fce847328.svg"/>
+{{- end -}}
+{{- if .active -}}
+<span class="text-white text-[15px]{{ if not $isMobile }} leading-normal whitespace-nowrap{{ end }}" style="font-family:var(--font-sora), sans-serif;font-weight:700">{{ .label }}</span>
+{{- else -}}
+<span class="text-white">{{ .label }}</span>
+{{- end }}
+</a>

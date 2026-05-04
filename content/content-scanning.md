@@ -9,50 +9,52 @@ cta_primary:
 cta_secondary:
   label: "View on GitHub"
   link: "https://github.com/calliopeai/zentinelle"
+sections:
+  - layout: split-callout
+    heading: "Your AI just sent a customer's"
+    accent: "SSN to OpenAI"
+    cards:
+      - eyebrow: "The scenario"
+        tone: danger
+        body:
+          - "It was an accident. An engineer pasted some test data. The AI helpfully included it in the response. Now it is in a third-party's logs."
+          - "This is not hypothetical. It is happening right now in organizations without content controls."
+      - eyebrow: "With Zentinelle"
+        tone: accent
+        body:
+          - "Zentinelle scans every prompt and response. Detects PII before it leaves your perimeter. Catches toxicity before it reaches users. Blocks prompt injection before it compromises your agents."
+        chips:
+          - "PII Detection"
+          - "Toxicity"
+          - "Prompt Injection"
+          - "Sensitive Data"
+  - layout: card-grid
+    eyebrow: "What gets scanned"
+    heading: "Scanning that"
+    accent: "fits your workflow"
+    cards:
+      - eyebrow: "Real-Time Scanning"
+        title: "Real-Time Scanning"
+        body:
+          - "Every prompt and response passes through Zentinelle's content scanner. Detection happens in milliseconds with no noticeable latency for users."
+          - "Scan on input, output, or both. Configure thresholds. Define what triggers action."
+        tone: neutral
+      - eyebrow: "Configurable Enforcement"
+        title: "Configurable Enforcement"
+        body:
+          - "Different policies for different contexts. Stricter for production, looser for development."
+        steps:
+          - label: "Block"
+            description: "Stop the interaction. User sees an error."
+          - label: "Warn"
+            description: "Allow but flag for review. User may not notice."
+          - label: "Log"
+            description: "Record for audit. No user impact."
+        tone: accent
+      - eyebrow: "Incident Response"
+        title: "Incident Response"
+        body:
+          - "When violations occur, Zentinelle creates an incident: who, what, when, severity. Route to your existing ticketing system. Trigger Slack alerts. Feed your SIEM."
+        note: "Data leaks are preventable if you are scanning."
+        tone: neutral
 ---
-
-## Your AI just sent a customer's SSN to OpenAI
-
-It was an accident. An engineer pasted some test data. The AI helpfully included it in the response. Now it is in a third-party's logs.
-
-This is not hypothetical. It is happening right now in organizations without content controls.
-
-Zentinelle scans every prompt and response. Detects PII before it leaves your perimeter. Catches toxicity before it reaches users. Blocks prompt injection before it compromises your agents.
-
----
-
-## What gets scanned
-
-<div class="cards">
-<div class="card"><div class="card-title">PII Detection</div><div class="card-desc">Credit cards, SSNs, emails, phone numbers, names, and addresses.</div></div>
-<div class="card"><div class="card-title">Toxicity Scoring</div><div class="card-desc">Hate speech, harassment, profanity, and threatening language.</div></div>
-<div class="card"><div class="card-title">Prompt Injection</div><div class="card-desc">Attempts to override system prompts or escape agent constraints.</div></div>
-<div class="card"><div class="card-title">Data Exfiltration</div><div class="card-desc">Patterns that suggest intentional data extraction.</div></div>
-<div class="card"><div class="card-title">Custom Patterns</div><div class="card-desc">Your own regex rules for proprietary data formats and identifiers.</div></div>
-</div>
-
----
-
-## How it works
-
-### Real-Time Scanning
-
-Every prompt and response passes through Zentinelle's content scanner. Detection happens in milliseconds with no noticeable latency for users.
-
-Scan on input, output, or both. Configure thresholds. Define what triggers action.
-
-### Configurable Enforcement
-
-**Block** — Stop the interaction. User sees an error.
-
-**Warn** — Allow but flag for review. User may not notice.
-
-**Log** — Record for audit. No user impact.
-
-Different policies for different contexts. Stricter for production, looser for development.
-
-### Incident Response
-
-When violations occur, Zentinelle creates an incident: who, what, when, severity. Route to your existing ticketing system. Trigger Slack alerts. Feed your SIEM.
-
-<div class="callout"><p><strong>Data leaks are preventable</strong> if you are scanning. Zentinelle gives you the content safety layer your AI systems need, before an incident makes headlines.</p></div>

@@ -1,0 +1,13 @@
+{{- /* Required: badgeLabel, badgeIcon, headlineHTML, description. Optional: ctas, ctaWrap. */ -}}
+<div class="absolute pointer-events-none" style="width:min(967px, 120vw);height:min(600px, 80vw);left:50%;top:-10%;transform:translateX(-50%);z-index:0;background:radial-gradient(ellipse at center, rgba(55,239,237,0.07) 0%, transparent 70%);filter:blur(60px)" aria-hidden="true"></div>
+<section class="relative z-10 mx-auto max-w-[1920px] px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 pt-20 pb-24 lg:pt-28 lg:pb-32 flex flex-col gap-[28px] items-start">
+{{ partial "badge.html" (dict "variant" "hero" "label" .badgeLabel "iconHTML" .badgeIcon) }}
+<h1 class="text-[40px] sm:text-[52px] lg:text-[64px] leading-[1.2] text-white max-w-[860px]" style="font-family:var(--font-boldonse), sans-serif;font-weight:400">{{ .headlineHTML }}</h1>
+<p class="text-[#ccccd8] text-[18px] sm:text-[22px] leading-relaxed max-w-[640px]" style="font-family:var(--font-sora), sans-serif;font-weight:300">{{ .description }}</p>
+{{- with .ctas -}}
+  {{- if ne $.ctaWrap false -}}<div class="flex flex-wrap gap-[12px]">{{- end -}}
+  {{- range . -}}{{ partial "button-link.html" . }}{{- end -}}
+  {{- if ne $.ctaWrap false -}}</div>{{- end -}}
+{{- end }}
+<div class="w-full h-px bg-white/8 mt-8"></div>
+</section>
