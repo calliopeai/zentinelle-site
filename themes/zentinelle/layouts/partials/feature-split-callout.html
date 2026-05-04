@@ -1,0 +1,10 @@
+<section class="relative z-10 mx-auto max-w-[1920px] px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 pb-24 lg:pb-32 flex flex-col gap-[40px]">
+  {{ partial "feature-section-heading.html" . }}
+  <div class="flex flex-col lg:flex-row gap-6 lg:gap-8 items-stretch">
+    {{- range .cards -}}
+    <div class="flex-1">
+      {{ partial "feature-content-card.html" . }}
+    </div>
+    {{- end -}}
+  </div>
+</section>

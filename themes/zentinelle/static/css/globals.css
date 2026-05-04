@@ -1,0 +1,165 @@
+@import "tailwindcss";
+
+html {
+  scroll-behavior: smooth;
+}
+
+[data-card-inner] {
+  transition: opacity 0.35s ease-out, transform 0.35s ease-out, filter 0.35s ease-out;
+  overflow: hidden;
+}
+
+:root {
+  --background: #0b0b19;
+  --foreground: #ffffff;
+  --accent: #37efed;
+  --text-secondary: #ccccd8;
+}
+
+.accent {
+  color: var(--accent);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-accent: var(--accent);
+  --color-text-secondary: var(--text-secondary);
+  --font-sora: var(--font-sora);
+  --font-inter: var(--font-inter);
+  --font-boldonse: var(--font-boldonse);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sora), sans-serif;
+}
+
+/* ── Custom scrollbar ── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0b0b19;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(55, 239, 237, 0.35);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(55, 239, 237, 0.65);
+}
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(55, 239, 237, 0.35) #0b0b19;
+}
+
+/* ── Floating squares animations ── */
+
+@keyframes sq-float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-22px); }
+}
+
+@keyframes sq-float-alt {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(18px); }
+}
+
+@keyframes sq-spin-cw {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes sq-spin-ccw {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(-360deg); }
+}
+
+@keyframes sq-drift {
+  0%   { transform: translate(0px,   0px)  rotate(45deg); }
+  25%  { transform: translate(10px, -16px) rotate(52deg); }
+  50%  { transform: translate(-6px, -28px) rotate(45deg); }
+  75%  { transform: translate(-12px, -10px) rotate(38deg); }
+  100% { transform: translate(0px,   0px)  rotate(45deg); }
+}
+
+@keyframes sq-drift-b {
+  0%   { transform: translate(0px,   0px)  rotate(-20deg); }
+  33%  { transform: translate(-8px, -14px) rotate(-14deg); }
+  66%  { transform: translate(12px, -22px) rotate(-26deg); }
+  100% { transform: translate(0px,   0px)  rotate(-20deg); }
+}
+
+@keyframes sq-glow-pulse {
+  0%, 100% { opacity: 0.35; }
+  50%       { opacity: 0.9;  }
+}
+
+@keyframes sq-border-pulse {
+  0%, 100% { box-shadow: 0 0 8px  rgba(55,239,237,0.2), 0 0 24px rgba(55,239,237,0.08); }
+  50%       { box-shadow: 0 0 20px rgba(55,239,237,0.55), 0 0 50px rgba(55,239,237,0.25), 0 0 80px rgba(55,239,237,0.1); }
+}
+
+@keyframes sq-scan {
+  0%   { top: -2px;   opacity: 0; }
+  5%   { opacity: 1; }
+  95%  { opacity: 0.8; }
+  100% { top: 100%;   opacity: 0; }
+}
+
+@keyframes sq-corner-blink {
+  0%, 100% { opacity: 0.4; }
+  50%       { opacity: 1; }
+}
+
+@keyframes sq-dot-pulse {
+  0%, 100% { opacity: 0.2; transform: scale(1); }
+  50%       { opacity: 0.8; transform: scale(1.4); }
+}
+
+@keyframes arch-flow {
+  0%   { top: -24px; opacity: 0; }
+  20%  { opacity: 1; }
+  80%  { opacity: 1; }
+  100% { top: 48px;  opacity: 0; }
+}
+
+@keyframes sq-halo {
+  0%, 100% { opacity: 0.06; transform: scale(1); }
+  50%       { opacity: 0.12; transform: scale(1.08); }
+}
+
+/* ── Footer form input improvements ── */
+footer input[type="text"],
+footer input[type="email"],
+footer textarea {
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+footer input[type="text"]:focus,
+footer input[type="email"]:focus,
+footer textarea:focus {
+  border-color: rgba(55, 239, 237, 0.4) !important;
+  box-shadow: 0 0 0 3px rgba(55, 239, 237, 0.08), 0 1px 2px rgba(0, 0, 0, 0.05);
+  outline: none;
+}
+footer input::placeholder,
+footer textarea::placeholder {
+  color: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* ── Contact modal input styles ── */
+.modal-input {
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+.modal-input:focus {
+  border-color: rgba(55, 239, 237, 0.4) !important;
+  box-shadow: 0 0 0 3px rgba(55, 239, 237, 0.08);
+  outline: none;
+}
+.modal-input::placeholder {
+  color: rgba(255, 255, 255, 0.3) !important;
+}

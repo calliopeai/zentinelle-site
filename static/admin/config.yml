@@ -1,0 +1,746 @@
+---
+backend:
+  name: proxy
+  proxy_url: http://localhost:8081/api/v1
+media_folder: static/images/uploads
+public_folder: "/images/uploads"
+collections:
+- name: page_strings
+  label: Pages
+  files:
+  - label: Footer
+    name: footer
+    file: data/footer.yml
+    fields:
+    - label: Headline
+      name: headline
+      widget: object
+      fields:
+      - label: Line 1
+        name: line_1
+        widget: string
+      - label: Line 2
+        name: line_2
+        widget: string
+    - label: Description
+      name: description
+      widget: text
+    - label: Menu Columns
+      name: menus
+      widget: list
+      summary: "{{fields.heading}}"
+      fields:
+      - label: Heading
+        name: heading
+        widget: string
+      - label: Links
+        name: links
+        widget: list
+        summary: "{{fields.label}}"
+        fields:
+        - label: Label
+          name: label
+          widget: string
+        - label: URL
+          name: url
+          widget: string
+        - label: Open in new tab
+          name: external
+          widget: boolean
+          default: false
+    - label: Contact Form
+      name: contact_form
+      widget: object
+      fields:
+      - label: Heading
+        name: heading
+        widget: string
+      - label: Name Label
+        name: name_label
+        widget: string
+      - label: Name Placeholder
+        name: name_placeholder
+        widget: string
+      - label: Email Label
+        name: email_label
+        widget: string
+      - label: Email Placeholder
+        name: email_placeholder
+        widget: string
+      - label: Message Label
+        name: message_label
+        widget: string
+      - label: Message Placeholder
+        name: message_placeholder
+        widget: string
+      - label: Consent Prefix
+        name: consent_prefix
+        widget: string
+      - label: Terms Label
+        name: terms_label
+        widget: string
+      - label: Terms URL
+        name: terms_url
+        widget: string
+      - label: Consent Middle
+        name: consent_middle
+        widget: string
+      - label: Privacy Label
+        name: privacy_label
+        widget: string
+      - label: Privacy URL
+        name: privacy_url
+        widget: string
+      - label: Consent Suffix
+        name: consent_suffix
+        widget: string
+      - label: Submit Label
+        name: submit_label
+        widget: string
+    - label: Credit
+      name: credit
+      widget: object
+      fields:
+      - label: Prefix
+        name: prefix
+        widget: string
+      - label: Label
+        name: label
+        widget: string
+      - label: URL
+        name: url
+        widget: string
+  - label: Risk
+    name: risk
+    file: content/risk.md
+    fields:
+    - label: Type
+      name: type
+      widget: hidden
+      default: risk
+    - label: Title
+      name: title
+      widget: string
+    - label: Description
+      name: description
+      widget: text
+    - label: Headline
+      name: headline
+      widget: text
+      hint: "Use <span class=\"accent\">text</span> to highlight words in accent color."
+    - label: Primary CTA
+      name: cta_primary
+      widget: object
+      fields:
+      - label: Label
+        name: label
+        widget: string
+      - label: Link
+        name: link
+        widget: string
+    - label: Secondary CTA
+      name: cta_secondary
+      widget: object
+      fields:
+      - label: Label
+        name: label
+        widget: string
+      - label: Link
+        name: link
+        widget: string
+    - label: Sections
+      name: sections
+      widget: list
+      summary: "{{fields.heading}}"
+      fields: &1
+      - label: Layout
+        name: layout
+        widget: select
+        options:
+        - split-callout
+        - card-grid
+      - label: Eyebrow
+        name: eyebrow
+        widget: string
+        required: false
+      - label: Heading
+        name: heading
+        widget: string
+        required: false
+      - label: Accent
+        name: accent
+        widget: string
+        required: false
+      - label: Cards
+        name: cards
+        widget: list
+        summary: "{{fields.title}}"
+        fields:
+        - label: Eyebrow
+          name: eyebrow
+          widget: string
+          required: false
+        - label: Tone
+          name: tone
+          widget: select
+          default: neutral
+          options:
+          - neutral
+          - accent
+          - danger
+          - warning
+        - label: Title
+          name: title
+          widget: string
+          required: false
+        - label: Body Paragraphs
+          name: body
+          widget: list
+          required: false
+          field:
+            label: Paragraph
+            name: paragraph
+            widget: text
+        - label: Chips
+          name: chips
+          widget: list
+          required: false
+          field:
+            label: Chip
+            name: chip
+            widget: string
+        - label: Bullet Items
+          name: items
+          widget: list
+          required: false
+          field:
+            label: Item
+            name: item
+            widget: string
+        - label: Steps
+          name: steps
+          widget: list
+          required: false
+          summary: "{{fields.label}}"
+          fields:
+          - label: Label
+            name: label
+            widget: string
+          - label: Description
+            name: description
+            widget: string
+            required: false
+        - label: Note
+          name: note
+          widget: text
+          required: false
+  - label: Governance
+    name: governance
+    file: content/governance.md
+    fields:
+    - label: Type
+      name: type
+      widget: hidden
+      default: governance
+    - label: Title
+      name: title
+      widget: string
+    - label: Description
+      name: description
+      widget: text
+    - label: Headline
+      name: headline
+      widget: text
+      hint: "Use <span class=\"accent\">text</span> to highlight words in accent color."
+    - label: Primary CTA
+      name: cta_primary
+      widget: object
+      fields:
+      - label: Label
+        name: label
+        widget: string
+      - label: Link
+        name: link
+        widget: string
+    - label: Secondary CTA
+      name: cta_secondary
+      widget: object
+      fields:
+      - label: Label
+        name: label
+        widget: string
+      - label: Link
+        name: link
+        widget: string
+    - label: Sections
+      name: sections
+      widget: list
+      summary: "{{fields.heading}}"
+      fields: *1
+  - label: Content Scanning
+    name: content_scanning
+    file: content/content-scanning.md
+    fields:
+    - label: Type
+      name: type
+      widget: hidden
+      default: content-scanning
+    - label: Title
+      name: title
+      widget: string
+    - label: Description
+      name: description
+      widget: text
+    - label: Headline
+      name: headline
+      widget: text
+      hint: "Use <span class=\"accent\">text</span> to highlight words in accent color."
+    - label: Primary CTA
+      name: cta_primary
+      widget: object
+      fields:
+      - label: Label
+        name: label
+        widget: string
+      - label: Link
+        name: link
+        widget: string
+    - label: Secondary CTA
+      name: cta_secondary
+      widget: object
+      fields:
+      - label: Label
+        name: label
+        widget: string
+      - label: Link
+        name: link
+        widget: string
+    - label: Sections
+      name: sections
+      widget: list
+      summary: "{{fields.heading}}"
+      fields: *1
+  - label: Observability
+    name: observability
+    file: content/observability.md
+    fields:
+    - label: Type
+      name: type
+      widget: hidden
+      default: observability
+    - label: Title
+      name: title
+      widget: string
+    - label: Description
+      name: description
+      widget: text
+    - label: Headline
+      name: headline
+      widget: text
+      hint: "Use <span class=\"accent\">text</span> to highlight words in accent color."
+    - label: Primary CTA
+      name: cta_primary
+      widget: object
+      fields:
+      - label: Label
+        name: label
+        widget: string
+      - label: Link
+        name: link
+        widget: string
+    - label: Secondary CTA
+      name: cta_secondary
+      widget: object
+      fields:
+      - label: Label
+        name: label
+        widget: string
+      - label: Link
+        name: link
+        widget: string
+    - label: Sections
+      name: sections
+      widget: list
+      summary: "{{fields.heading}}"
+      fields: *1
+  - label: Compliance
+    name: compliance
+    file: content/compliance.md
+    fields:
+    - label: Type
+      name: type
+      widget: hidden
+      default: compliance
+    - label: Title
+      name: title
+      widget: string
+    - label: Description
+      name: description
+      widget: text
+    - label: Headline
+      name: headline
+      widget: text
+      hint: "Use <span class=\"accent\">text</span> to highlight words in accent color."
+    - label: Primary CTA
+      name: cta_primary
+      widget: object
+      fields:
+      - label: Label
+        name: label
+        widget: string
+      - label: Link
+        name: link
+        widget: string
+    - label: Secondary CTA
+      name: cta_secondary
+      widget: object
+      fields:
+      - label: Label
+        name: label
+        widget: string
+      - label: Link
+        name: link
+        widget: string
+    - label: Sections
+      name: sections
+      widget: list
+      summary: "{{fields.heading}}"
+      fields: *1
+  - label: Homepage
+    name: _index
+    file: content/_index.md
+    fields:
+    - label: Title
+      name: title
+      widget: string
+    - label: Description
+      name: description
+      widget: text
+    - label: Sections
+      name: strings
+      widget: object
+      collapsed: false
+      fields:
+      - label: Shared CTAs
+        name: shared
+        widget: object
+        collapsed: true
+        fields:
+        - label: Primary CTA Label
+          name: primary_cta_label
+          widget: string
+        - label: Primary CTA Href
+          name: primary_cta_href
+          widget: string
+        - label: Docs CTA Label
+          name: docs_cta_label
+          widget: string
+        - label: Docs CTA Href
+          name: docs_cta_href
+          widget: string
+        - label: SDK CTA Label
+          name: sdk_cta_label
+          widget: string
+        - label: SDK CTA Href
+          name: sdk_cta_href
+          widget: string
+        - label: Contact CTA Label
+          name: contact_cta_label
+          widget: string
+        - label: Contact CTA Href
+          name: contact_cta_href
+          widget: string
+      - label: Hero
+        name: hero
+        widget: object
+        collapsed: true
+        fields:
+        - label: Version Badge
+          name: v001_alpha_mit_license_actively_developed
+          widget: string
+        - label: Hero Title Line 1
+          name: hero_title_line_1
+          widget: string
+        - label: Hero Title Line 2 Prefix
+          name: hero_title_line_2_prefix
+          widget: string
+        - label: AI Agents
+          name: ai_agents
+          widget: string
+        - label: Subheadline
+          name: zentinelle_sits_between_your_ai_agents_their
+          widget: string
+        - label: Enforcing Policies
+          name: enforcing_policies
+          widget: string
+        - label: Logging Every Action
+          name: logging_every_action
+          widget: string
+        - label: Realtime Compliance Dashboard
+          name: realtime_compliance_dashboard
+          widget: string
+      - label: Architecture Section
+        name: architecture
+        widget: object
+        collapsed: true
+        fields:
+        - label: Architecture Label
+          name: architecture_label
+          widget: string
+        - label: Architecture Headline Line 1
+          name: architecture_headline_line_1
+          widget: string
+        - label: Architecture Headline Line 2 Prefix
+          name: architecture_headline_line_2_prefix
+          widget: string
+        - label: Your Agents
+          name: your_agents
+          widget: string
+        - label: Zentinelle Intercepts Every LLM Call And Tool
+          name: zentinelle_intercepts_every_llm_call_and_tool
+          widget: text
+        - label: Policies Enforced
+          name: policies_enforced
+          widget: string
+        - label: Rate Limits
+          name: rate_limits
+          widget: string
+        - label: Tool Permissions
+          name: tool_permissions
+          widget: string
+        - label: PII Detection
+          name: pii_detection
+          widget: string
+        - label: Model Restrictions
+          name: model_restrictions
+          widget: string
+        - label: Cost Controls
+          name: cost_controls
+          widget: string
+        - label: Your Agent
+          name: your_agent
+          widget: string
+        - label: Claude Code
+          name: claude_code
+          widget: string
+        - label: Codex
+          name: codex
+          widget: string
+        - label: Gemini Cli
+          name: gemini_cli
+          widget: string
+        - label: Custom
+          name: custom
+          widget: string
+        - label: Zentinelle
+          name: zentinelle
+          widget: string
+        - label: Intercepting
+          name: intercepting
+          widget: string
+        - label: Policy Check
+          name: policy_check
+          widget: string
+        - label: Audit Log
+          name: audit_log
+          widget: string
+        - label: Monitoring
+          name: monitoring
+          widget: string
+        - label: LLM Provider
+          name: llm_provider
+          widget: string
+        - label: Anthropic
+          name: anthropic
+          widget: string
+        - label: Openai
+          name: openai
+          widget: string
+        - label: Google
+          name: google
+          widget: string
+      - label: Features Section
+        name: features
+        widget: object
+        collapsed: true
+        fields:
+        - label: Capabilities
+          name: capabilities
+          widget: string
+        - label: Features Headline Prefix
+          name: features_headline_prefix
+          widget: string
+        - label: Gives You
+          name: gives_you
+          widget: string
+        - label: Section Body
+          name: policy_enforcement_observability_compliance_a
+          widget: string
+        - label: Policy Enforcement
+          name: policy_enforcement
+          widget: string
+        - label: Policy Enforcement Body
+          name: rate_limits_cost_controls_tool_allowlistsbloc
+          widget: text
+        - label: Realtime Observability
+          name: realtime_observability
+          widget: string
+        - label: Real-time Observability Body
+          name: every_tool_call_every_llm_invocation_visible
+          widget: text
+        - label: Compliance Frameworks
+          name: compliance_frameworks
+          widget: string
+        - label: Compliance Frameworks Body
+          name: builtin_dashboards_for_soc2_gdpr_hipaa_eu_ai
+          widget: text
+        - label: Audit Logging
+          name: audit_logging
+          widget: string
+        - label: Audit Logging Body
+          name: immutable_logs_of_every_agent_action_policy_d
+          widget: text
+        - label: Enterprise Resilience
+          name: enterprise_resilience
+          widget: string
+        - label: Enterprise Resilience Body
+          name: circuit_breaker_pattern_retry_with_exponentia
+          widget: text
+        - label: Multiagent Support
+          name: multiagent_support
+          widget: string
+        - label: Multi-agent Support Body
+          name: track_claude_code_codex_gemini_cli_and_custom
+          widget: text
+      - label: Alpha Status Section
+        name: alpha_status
+        widget: object
+        collapsed: true
+        fields:
+        - label: Alpha
+          name: alpha
+          widget: string
+        - label: Honest About It
+          name: honest_about_it
+          widget: string
+        - label: Live
+          name: live
+          widget: string
+        - label: Openai Codex
+          name: openai_codex
+          widget: string
+        - label: Status Body
+          name: zentinelle_is_early_were_shipping_fast_we_wan
+          widget: text
+        - label: Working Now
+          name: working_now
+          widget: string
+        - label: Claude Code Integration Hooks
+          name: claude_code_integration_hooks
+          widget: string
+        - label: Coming Soon
+          name: coming_soon
+          widget: string
+      - label: Roadmap Section
+        name: roadmap
+        widget: object
+        collapsed: true
+        fields:
+        - label: Roadmap Label
+          name: roadmap_label
+          widget: string
+        - label: Coming Soon
+          name: coming_soon
+          widget: string
+        - label: Built In The Open
+          name: built_in_the_open
+          widget: string
+        - label: Soon
+          name: soon
+          widget: string
+        - label: Langchain
+          name: langchain
+          widget: string
+        - label: Llamaindex
+          name: llamaindex
+          widget: string
+        - label: Crewai
+          name: crewai
+          widget: string
+        - label: Vercel AI SDK
+          name: vercel_ai_sdk
+          widget: string
+        - label: n8n
+          name: n8n
+          widget: string
+        - label: Microsoft Agent Framework
+          name: microsoft_agent_framework
+          widget: string
+        - label: Roadmap Body
+          name: everything_on_this_list_is_being_built_in_pub
+          widget: text
+        - label: Roadmap CTA Label
+          name: roadmap_cta_label
+          widget: string
+        - label: Coming Soon 2
+          name: coming_soon_2
+          widget: string
+        - label: Langchain Callback Handlers
+          name: langchain_callback_handlers
+          widget: string
+      - label: Quick Start Section
+        name: quick_start
+        widget: object
+        collapsed: true
+        fields:
+        - label: Quick Start Label
+          name: quick_start_label
+          widget: string
+        - label: Up In
+          name: up_in
+          widget: string
+        - label: Five Minutes
+          name: five_minutes
+          widget: string
+        - label: Intro Body
+          name: clone_the_repo_run_docker_compose_point_your
+          widget: string
+        - label: Clone And Start
+          name: clone_and_start
+          widget: string
+        - label: Git
+          name: git
+          widget: string
+        - label: Git Clone Command
+          name: clone_httpsgithubcomcalliopeaizentinelle
+          widget: string
+        - label: Directory Name
+          name: zentinelle_2
+          widget: string
+        - label: Docker
+          name: docker
+          widget: string
+        - label: Compose Up D
+          name: compose_up_d
+          widget: string
+        - label: Compose Exec Backend Python Managepy Migrate
+          name: compose_exec_backend_python_managepy_migrate
+          widget: string
+        - label: Compose Exec Backend Python Managepy Createsu
+          name: compose_exec_backend_python_managepy_createsu
+          widget: string
+        - label: Open
+          name: open
+          widget: string
+        - label: Connect Your Agent Proxy Mode Works With Any
+          name: connect_your_agent_proxy_mode_works_with_any
+          widget: string
+        - label: Export
+          name: export
+          widget: string
+        - label: Anthropic Base URL Command
+          name: anthropic_base_urlhttplocalhost8080proxyanthr
+          widget: string
+        - label: OpenAI Base URL Command
+          name: openai_base_urlhttplocalhost8080proxyopenai
+          widget: string

@@ -1,0 +1,55 @@
+{{- $footer := site.Data.footer -}}
+<footer style="background:#fdfdfd" class="w-full">
+<div class="mx-auto max-w-[1920px] px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 py-16 lg:py-24">
+<div class="flex flex-col lg:flex-row items-stretch gap-10 lg:gap-16">
+<div class="flex-1 flex flex-col justify-between gap-12 min-w-0">
+<div class="flex flex-col gap-[24px]">
+<img alt="Zentinelle" loading="lazy" width="260" height="64" decoding="async" style="color:transparent;object-fit:contain" src="/logo2.svg"/>
+<p class="text-[42px] sm:text-[56px] lg:text-[72px] leading-[1.4] text-[#0d0d0d]" style="font-family:var(--font-boldonse), sans-serif;font-weight:400">{{ $footer.headline.line_1 }}<br/>{{ $footer.headline.line_2 }}</p>
+<p class="text-[#0d0d0d] text-[15px] leading-relaxed max-w-[480px]" style="font-family:var(--font-sora), sans-serif;font-weight:400">{{ $footer.description }}</p>
+</div>
+<div class="flex gap-16 sm:gap-24 items-start flex-wrap">
+{{- range $footer.menus }}
+<div class="flex flex-col gap-[16px]">
+<span class="text-[#0d0d0d] text-[13px] leading-normal uppercase" style="font-family:var(--font-sora), sans-serif;font-weight:700">{{ .heading }}</span>
+{{- range .links }}
+<a href="{{ .url }}"{{ if .external }} target="_blank" rel="noopener noreferrer"{{ end }} class="text-[#0d0d0d] text-[14px] leading-normal hover:opacity-60 transition-opacity" style="font-family:var(--font-sora), sans-serif;font-weight:400">{{ .label }}</a>
+{{- end }}
+</div>
+{{- end }}
+</div>
+</div>
+<div id="contact">
+<div class="shrink-0 w-full lg:w-[468px] flex flex-col gap-[24px]">
+<p class="text-[#0d0d0d] text-[20px] leading-snug" style="font-family:var(--font-boldonse), sans-serif;font-weight:400">{{ $footer.contact_form.heading }}</p>
+<form class="flex flex-col gap-[16px]">
+<div class="flex flex-col sm:flex-row gap-[12px]">
+<div class="flex flex-col gap-[6px] flex-1">
+<label for="footer-name" class="text-[#0d0d0d] text-[12px] leading-normal uppercase tracking-wide" style="font-family:var(--font-sora), sans-serif;font-weight:700">{{ $footer.contact_form.name_label }}</label>
+<input id="footer-name" type="text" placeholder="{{ $footer.contact_form.name_placeholder }}" class="w-full px-[14px] py-[10px] rounded-[10px] text-[14px] leading-normal bg-white border border-[#0d0d0d]/25 text-[#0d0d0d] placeholder:text-[#0d0d0d]/40 outline-none focus:border-[#0d0d0d]/55 focus:ring-2 focus:ring-[#0d0d0d]/8 transition-colors" style="font-family:var(--font-sora), sans-serif"/>
+</div>
+<div class="flex flex-col gap-[6px] flex-1">
+<label for="footer-email" class="text-[#0d0d0d] text-[12px] leading-normal uppercase tracking-wide" style="font-family:var(--font-sora), sans-serif;font-weight:700">{{ $footer.contact_form.email_label }}</label>
+<input id="footer-email" type="email" placeholder="{{ $footer.contact_form.email_placeholder }}" class="w-full px-[14px] py-[10px] rounded-[10px] text-[14px] leading-normal bg-white border border-[#0d0d0d]/25 text-[#0d0d0d] placeholder:text-[#0d0d0d]/40 outline-none focus:border-[#0d0d0d]/55 focus:ring-2 focus:ring-[#0d0d0d]/8 transition-colors" style="font-family:var(--font-sora), sans-serif"/>
+</div>
+</div>
+<div class="flex flex-col gap-[6px]">
+<label for="footer-message" class="text-[#0d0d0d] text-[12px] leading-normal uppercase tracking-wide" style="font-family:var(--font-sora), sans-serif;font-weight:700">{{ $footer.contact_form.message_label }}</label>
+<textarea id="footer-message" rows="6" placeholder="{{ $footer.contact_form.message_placeholder }}" class="w-full px-[14px] py-[10px] rounded-[10px] text-[14px] leading-normal bg-white border border-[#0d0d0d]/25 text-[#0d0d0d] placeholder:text-[#0d0d0d]/40 outline-none focus:border-[#0d0d0d]/55 focus:ring-2 focus:ring-[#0d0d0d]/8 transition-colors resize-none" style="font-family:var(--font-sora), sans-serif">
+</textarea>
+</div>
+<label class="flex items-start gap-[10px] cursor-pointer">
+<input type="checkbox" required="" class="mt-[2px] shrink-0 w-[16px] h-[16px] rounded-[4px] border border-[#0d0d0d]/25 accent-[#0d0d0d] cursor-pointer"/>
+<span class="text-[#0d0d0d]/60 text-[12px] leading-relaxed" style="font-family:var(--font-sora), sans-serif;font-weight:400">{{ $footer.contact_form.consent_prefix }} <a href="{{ $footer.contact_form.terms_url }}" class="underline text-[#0d0d0d]/80 hover:text-[#0d0d0d] transition-colors">{{ $footer.contact_form.terms_label }}</a> {{ $footer.contact_form.consent_middle }} <a href="{{ $footer.contact_form.privacy_url }}" class="underline text-[#0d0d0d]/80 hover:text-[#0d0d0d] transition-colors">{{ $footer.contact_form.privacy_label }}</a>{{ $footer.contact_form.consent_suffix }}</span>
+</label>
+<button type="submit" class="self-start inline-flex items-center justify-center gap-[8px] px-[18px] py-[11px] rounded-[10px] text-[14px] leading-normal bg-[#0d0d0d] text-white hover:bg-[#1e1e2e] transition-colors duration-200 disabled:opacity-60" style="font-family:var(--font-sora), sans-serif;font-weight:400">{{ $footer.contact_form.submit_label }}</button>
+</form>
+</div>
+</div>
+</div>
+<div class="mt-12 pt-6 border-t border-[#0d0d0d]/10 flex items-center justify-center">
+<p class="text-[#0d0d0d]/40 text-[12px] leading-normal" style="font-family:var(--font-sora), sans-serif;font-weight:400">{{ $footer.credit.prefix }} <a href="{{ $footer.credit.url }}" class="text-[#0d0d0d]/60 hover:text-[#0d0d0d] transition-colors">{{ $footer.credit.label }}</a>
+</p>
+</div>
+</div>
+</footer>

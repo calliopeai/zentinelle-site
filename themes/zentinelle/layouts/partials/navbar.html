@@ -1,0 +1,62 @@
+{{- $currentPath := .RelPermalink -}}
+{{- $navItems := slice
+  (dict "label" "Start" "href" "/" "active" (eq $currentPath "/"))
+  (dict "label" "How it works" "href" "/#how-it-works")
+  (dict "label" "Features" "href" "/#governance")
+  (dict "label" "Governance" "href" "/governance" "active" (eq $currentPath "/governance/"))
+  (dict "label" "Risk" "href" "/risk" "active" (eq $currentPath "/risk/"))
+  (dict "label" "Observability" "href" "/observability" "active" (eq $currentPath "/observability/"))
+  (dict "label" "Content Scanning" "href" "/content-scanning" "active" (eq $currentPath "/content-scanning/"))
+  (dict "label" "Compliance" "href" "/compliance" "active" (eq $currentPath "/compliance/"))
+  (dict "label" "Quick Start" "href" "/#quick-start")
+  (dict "label" "Docs" "href" "https://zentinelle.dev/wiki/sdk/" "external" true)
+-}}
+<header class="sticky top-0 z-50 flex items-center justify-between gap-6 px-6 py-[20px] md:px-10 lg:px-[60px] backdrop-blur-md bg-[#0b0b19]/70">
+<a href="https://zentinelle.ai/" target="_blank" rel="noopener noreferrer" class="shrink-0">
+<img alt="Zentinelle" loading="lazy" width="240" height="64" decoding="async" style="color:transparent;object-fit:contain" src="/logo.svg"/>
+</a>
+<nav class="hidden md:flex items-center gap-1 lg:gap-2">
+{{- range $navItems }}
+{{ partial "nav-link.html" (merge . (dict "mode" "desktop")) }}
+{{- end }}
+</nav>
+<div class="flex items-center gap-3">
+{{ partial "button-link.html" (dict
+  "href" "https://github.com/calliopeai/zentinelle"
+  "label" "View on GitHub"
+  "variant" "primary"
+  "external" true
+  "icon" true
+  "iconSize" 24
+  "class" "inline-flex items-center justify-center gap-[10px] px-[14px] py-[10px] rounded-[10px] text-[14px] leading-normal whitespace-nowrap bg-[#37efed] text-[#0b0b19] ring-0 ring-[#37efed]/0 hover:bg-white hover:ring-4 hover:ring-[#37efed]/40 hover:scale-[1.04] transition-all duration-300 ease-out shrink-0 hidden md:inline-flex"
+) }}
+<button class="md:hidden flex flex-col justify-center items-center w-[40px] h-[40px] gap-[5px] rounded-[8px] hover:bg-white/5 transition-colors" aria-label="Toggle menu">
+<span class="block w-[20px] h-[1.5px] bg-white transition-all duration-300 origin-center ">
+</span>
+<span class="block w-[20px] h-[1.5px] bg-white transition-all duration-300 ">
+</span>
+<span class="block w-[20px] h-[1.5px] bg-white transition-all duration-300 origin-center ">
+</span>
+</button>
+</div>
+</header>
+<div class="fixed inset-0 z-40 md:hidden transition-all duration-300 pointer-events-none">
+<div class="absolute inset-0 bg-[#0b0b19]/60 backdrop-blur-sm transition-opacity duration-300 opacity-0">
+</div>
+<nav class="absolute top-0 right-0 h-full w-[280px] bg-[#0f0f1e] border-l border-white/8 flex flex-col gap-0 pt-[90px] pb-8 px-4 transition-transform duration-300 ease-out overflow-y-auto translate-x-full">
+{{- range $navItems }}
+{{ partial "nav-link.html" (merge . (dict "mode" "mobile")) }}
+{{- end }}
+<div class="mt-auto pt-6 border-t border-white/8">
+{{ partial "button-link.html" (dict
+  "href" "https://github.com/calliopeai/zentinelle"
+  "label" "View on GitHub"
+  "variant" "plain"
+  "external" true
+  "icon" true
+  "iconSize" 20
+  "style" "font-family:var(--font-sora), sans-serif"
+) }}
+</div>
+</nav>
+</div>

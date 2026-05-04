@@ -1,0 +1,9 @@
+{{ define "main" }}
+<div style="max-width:48rem;margin:0 auto;padding:3rem 1.5rem">
+  <a href="/" style="color:#515be3;font-size:0.875rem;display:inline-block;margin-bottom:2rem">&larr; Back to home</a>
+  <h1 style="font-size:2.25rem;font-weight:700;margin-bottom:1rem">{{ .Title }}</h1>
+  {{ with .Params.description }}<p style="color:#9ca3af;font-size:1.125rem;margin-bottom:1.5rem">{{ . }}</p>{{ end }}
+  {{ with .Date }}<time style="color:#6b7280;font-size:0.875rem;display:block;margin-bottom:2.5rem">{{ .Format "January 2, 2006" }}</time>{{ end }}
+  <article>{{ .Content }}</article>
+</div>
+{{ end }}
