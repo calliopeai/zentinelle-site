@@ -2,6 +2,7 @@ baseURL = "https://zentinelle.ai/"
 languageCode = "en-us"
 title = "Zentinelle — Governance, Risk & Compliance for AI Agents"
 theme = "zentinelle"
+disableFastRender = true
 
 [params]
   version = "1.0.0"

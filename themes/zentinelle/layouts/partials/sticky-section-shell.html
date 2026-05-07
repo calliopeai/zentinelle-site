@@ -1,0 +1,31 @@
+{{- /* Required: z unless mode is "close". Optional: mode ("open"|"close"), innerHTML, id, tag, innerClass, innerStyle, sectionClass, wrapContainer. */ -}}
+{{- $tag := default "section" .tag -}}
+{{- $mode := .mode -}}
+{{- $sectionClass := default "sticky top-0 h-screen flex flex-col justify-center" .sectionClass -}}
+{{- $innerClass := cond (isset . "innerClass") .innerClass "flex flex-col lg:flex-row items-stretch gap-4 lg:gap-0 min-h-[720px]" -}}
+{{- $innerStyle := default "will-change:transform;transform-origin:center center" .innerStyle -}}
+{{- $wrapContainer := cond (isset . "wrapContainer") .wrapContainer true -}}
+{{- if eq $mode "close" -}}
+</div>
+{{- if $wrapContainer }}
+</div>
+{{- end }}
+{{- if eq $tag "footer" -}}</footer>{{- else -}}</section>{{- end }}
+{{- else -}}
+{{- if eq $tag "footer" -}}
+<footer{{ with .id }} id="{{ . }}"{{ end }} data-card="true" class="{{ $sectionClass }}" style="z-index:{{ .z }}">
+{{- else -}}
+<section{{ with .id }} id="{{ . }}"{{ end }} data-card="true" class="{{ $sectionClass }}" style="z-index:{{ .z }}">
+{{- end }}
+{{- if $wrapContainer }}
+<div class="mx-auto max-w-[1920px] px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 py-6 w-full">
+{{- end }}
+<div data-card-inner="true"{{ with $innerClass }} class="{{ . }}"{{ end }} style="{{ $innerStyle | safeCSS }}">{{ if ne $mode "open" }}{{ .innerHTML }}{{ end }}
+{{- if ne $mode "open" -}}</div>{{- end }}
+{{- if $wrapContainer }}
+{{- if ne $mode "open" }}
+</div>
+{{- end }}
+{{- end }}
+{{- if ne $mode "open" }}{{ if eq $tag "footer" -}}</footer>{{- else -}}</section>{{- end }}{{ end }}
+{{- end }}

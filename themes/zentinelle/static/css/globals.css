@@ -16,6 +16,10 @@ html {
   --text-secondary: #ccccd8;
 }
 
+.accent {
+  color: var(--accent);
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -30,11 +34,6 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sora), sans-serif;
-  cursor: none;
-}
-
-a, button, [role="button"] {
-  cursor: none;
 }
 
 /* ── Custom scrollbar ── */
@@ -136,19 +135,19 @@ a, button, [role="button"] {
 footer input[type="text"],
 footer input[type="email"],
 footer textarea {
-  border-color: rgba(13, 13, 13, 0.25) !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 footer input[type="text"]:focus,
 footer input[type="email"]:focus,
 footer textarea:focus {
-  border-color: rgba(13, 13, 13, 0.55) !important;
-  box-shadow: 0 0 0 3px rgba(13, 13, 13, 0.08), 0 1px 2px rgba(0, 0, 0, 0.05);
+  border-color: rgba(55, 239, 237, 0.4) !important;
+  box-shadow: 0 0 0 3px rgba(55, 239, 237, 0.08), 0 1px 2px rgba(0, 0, 0, 0.05);
   outline: none;
 }
 footer input::placeholder,
 footer textarea::placeholder {
-  color: rgba(13, 13, 13, 0.4) !important;
+  color: rgba(255, 255, 255, 0.3) !important;
 }
 
 /* ── Contact modal input styles ── */

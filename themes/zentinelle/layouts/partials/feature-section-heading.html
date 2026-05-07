@@ -1,0 +1,10 @@
+{{- if or .eyebrow .heading -}}
+<div class="flex flex-col gap-[16px] max-w-[760px]">
+{{- with .eyebrow -}}
+{{ partial "badge.html" (dict "variant" "section" "label" . "iconHTML" (safeHTML `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#37efed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>`)) }}
+{{- end -}}
+{{- with .heading -}}
+<h2 class="text-[28px] sm:text-[36px] lg:text-[42px] leading-[1.3] text-white max-w-[760px]" style="font-family:var(--font-boldonse), sans-serif;font-weight:400">{{ . | safeHTML }}{{ with $.accent }} <span class="text-[#37efed]">{{ . | safeHTML }}</span>{{ end }}</h2>
+{{- end -}}
+</div>
+{{- end -}}

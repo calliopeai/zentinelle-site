@@ -1,0 +1,51 @@
+headline:
+  line_1: Early stage.
+  line_2: Shaped by contributors.
+description: "We're building AI agent governance in the open. If you're
+  deploying agents and need observability and policy enforcement — we want to
+  hear from you. "
+menus:
+  - heading: Main menu
+    links:
+      - label: "GitHub"
+        url: https://github.com/calliopeai/zentinelle
+        external: true
+      - label: Docs
+        url: https://zentinelle.dev/wiki/sdk/
+        external: true
+      - label: SDK
+        url: https://zentinelle.dev/wiki/sdk/
+        external: true
+  - heading: More
+    links:
+      - label: Calliope AI
+        url: "#"
+        external: false
+      - label: Privacy Policy
+        url: "#"
+        external: false
+  - heading: "Contact us"
+    links:
+      - label: hello@zentinelle.com
+        url: mailto:hello@zentinelle.com
+        external: false
+contact_form:
+  name_label: Name
+  heading: Get in touch
+  submit_label: Send message
+  email_placeholder: you@company.com
+  email_label: Email
+  consent_suffix: .
+  consent_prefix: "I agree to the "
+  terms_url: "#"
+  privacy_url: "#"
+  consent_middle: "and "
+  message_placeholder: Tell us what you're building…
+  message_label: Message
+  terms_label: Terms of Service
+  privacy_label: Privacy Policy
+  name_placeholder: Your name
+credit:
+  prefix: Built with love by
+  label: Calliope Labs
+  url: "#"
