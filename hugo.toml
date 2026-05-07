@@ -1,13 +1,16 @@
 baseURL = "https://zentinelle.ai/"
 languageCode = "en-us"
-title = "Zentinelle — Runtime Governance for AI Agents"
+title = "Zentinelle — Governance, Risk & Compliance for AI Agents"
 theme = "zentinelle"
 
 [params]
-  description = "Zentinelle sits between your AI agents and their LLM providers, enforcing policies, logging every action, and providing a real-time compliance dashboard."
+  version = "1.0.0"
+  description = "Zentinelle sits between your AI agents and their LLM providers, enforcing policies, scanning content, logging activity, and giving you a real-time GRC portal."
   github = "https://github.com/calliopeai/zentinelle"
   sdk = "https://github.com/calliopeai/zentinelle-sdk"
   docs = "https://zentinelle.dev"
+  pypi = "https://pypi.org/project/zentinelle/"
+  npm = "https://www.npmjs.com/package/zentinelle"
 
 [build]
   writeStats = true
