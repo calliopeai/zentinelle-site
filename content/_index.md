@@ -36,6 +36,7 @@ strings:
     claude_code: Claude Code
     codex: Codex
     gemini_cli: Gemini CLI
+    openai_codex: OpenAI Codex
     custom: Custom
     zentinelle: Zentinelle
     intercepting: intercepting
