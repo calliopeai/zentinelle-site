@@ -36,9 +36,9 @@
         <span id="demo-progress" class="text-xs text-[#9ca3af] font-mono">1 / 8</span>
       </div>
 
-      <div class="relative" style="aspect-ratio: 1440/900; background:#0b0b19;">
+      <div class="relative" style="aspect-ratio: 1440/900; max-height: min(72vh, 720px); width: 100%; background:#0b0b19;">
         <img id="demo-image" src="/images/demo/01-dashboard.png" alt="Zentinelle dashboard"
-             class="absolute inset-0 w-full h-full object-cover transition-opacity duration-300" />
+             class="absolute inset-0 w-full h-full" style="object-fit: cover; object-position: top;" />
 
         <div id="demo-spotlight" style="display:none;position:absolute;pointer-events:none;border-radius:10px;box-shadow:0 0 0 9999px rgba(8,8,18,0.72), 0 0 0 1.5px #37efed, 0 0 32px rgba(55,239,237,0.55);transition:all 0.4s cubic-bezier(0.4, 0, 0.2, 1);"></div>
 
@@ -203,6 +203,13 @@
       spotlight.style.display = 'none';
     }
 
+    // Reset all positioning props each render
+    popover.style.left = '';
+    popover.style.right = '';
+    popover.style.top = '';
+    popover.style.bottom = '';
+    popover.style.transform = '';
+
     if (step.popover.center) {
       popover.style.left = '50%';
       popover.style.top = '50%';
@@ -210,7 +217,31 @@
     } else {
       popover.style.left = step.popover.x + '%';
       popover.style.top = step.popover.y + '%';
-      popover.style.transform = 'none';
+
+      // Clamp to bounds: if the popover would overflow the demo viewport,
+      // flip the anchor so it sits inside.
+      requestAnimationFrame(() => {
+        const container = document.getElementById('zentinelle-demo');
+        if (!container) return;
+        const cRect = container.getBoundingClientRect();
+        const pRect = popover.getBoundingClientRect();
+        const margin = 16;
+
+        if (pRect.bottom > cRect.bottom - margin) {
+          popover.style.top = '';
+          popover.style.bottom = (margin) + 'px';
+        }
+        if (pRect.right > cRect.right - margin) {
+          popover.style.left = '';
+          popover.style.right = (margin) + 'px';
+        }
+        if (pRect.left < cRect.left + margin) {
+          popover.style.left = margin + 'px';
+        }
+        if (pRect.top < cRect.top + margin) {
+          popover.style.top = margin + 'px';
+        }
+      });
     }
 
     prev.disabled = current === 0;
