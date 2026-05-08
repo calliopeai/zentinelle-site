@@ -25,9 +25,55 @@ const OUT_DIR = path.resolve(args.out || "static/demo");
 
 const STEPS = [
   { id: "01-dashboard", path: "/dashboard", waitFor: "[data-tour='dashboard-stats']" },
-  { id: "02-agents", path: "/agents", waitFor: "[data-tour='agents-table']" },
-  { id: "03-policies", path: "/policies", waitFor: "[data-tour='policies-heatmap']" },
-  { id: "04-risks", path: "/risks", waitFor: "[data-tour='risk-overview']" },
+  {
+    id: "02-agents",
+    path: "/agents",
+    waitFor: "[data-tour='agents-table']",
+    variants: [
+      {
+        id: "02-agents--register",
+        triggerLabel: "Register Agent",
+        triggerAction: async (page) => {
+          await page.locator('button:has-text("Register Agent")').first().click();
+          await page.waitForSelector('[role="dialog"]', { timeout: 4000 });
+          await page.waitForTimeout(400);
+        },
+      },
+    ],
+  },
+  {
+    id: "03-policies",
+    path: "/policies",
+    waitFor: "[data-tour='policies-heatmap']",
+    variants: [
+      {
+        id: "03-policies--create",
+        triggerLabel: "Create Policy",
+        triggerAction: async (page) => {
+          await page.locator('a:has-text("Create Policy"), button:has-text("Create Policy")').first().click();
+          // Create Policy is a route, not a dialog
+          await page.waitForLoadState('networkidle');
+          await page.waitForTimeout(800);
+        },
+      },
+    ],
+  },
+  {
+    id: "04-risks",
+    path: "/risks",
+    waitFor: "[data-tour='risk-overview']",
+    variants: [
+      {
+        id: "04-risks--create",
+        triggerLabel: "Create Risk",
+        triggerAction: async (page) => {
+          await page.locator('button:has-text("Create Risk"), a:has-text("Create Risk")').first().click();
+          await page.waitForSelector('[role="dialog"], form', { timeout: 4000 }).catch(() => {});
+          await page.waitForTimeout(800);
+        },
+      },
+    ],
+  },
   { id: "05-compliance", path: "/compliance", waitFor: null },
   { id: "06-audit", path: "/audit-logs", waitFor: "[data-tour='audit-chain']" },
   {
@@ -35,11 +81,16 @@ const STEPS = [
     path: "/assistant",
     waitFor: null,
     setup: async (page) => {
+      // Type a real query and wait for the streaming response to settle.
+      // This way the captured HTML shows a real conversation.
       const input = page.locator('textarea, input[placeholder*="Ask"]').first();
-      if ((await input.count()) > 0) {
-        await input.fill("How many open risks do I have?");
-        await page.waitForTimeout(300);
-      }
+      if ((await input.count()) === 0) return;
+      await input.fill("How many open risks do I have, and what is most critical?");
+      await page.keyboard.press("Meta+Enter").catch(() => {});
+      // Fallback: try Ctrl+Enter or click send button
+      await page.locator('button[type="submit"], button[aria-label*="send" i]').first().click().catch(() => {});
+      // Wait for at least some response text to appear
+      await page.waitForTimeout(8000);
     },
   },
 ];
@@ -90,6 +141,26 @@ const browserPath = chromium.executablePath();
       console.log(
         `    → ${path.relative(process.cwd(), out)} (${(html.length / 1024).toFixed(0)} KB)`,
       );
+
+      // Capture variants (open dialog, navigate to sub-page, etc.)
+      for (const v of step.variants || []) {
+        const vOut = path.join(OUT_DIR, `${v.id}.html`);
+        try {
+          // Reload base page so each variant starts clean
+          await page.goto(url, { waitUntil: "networkidle", timeout: 15000 });
+          if (step.waitFor) {
+            await page.waitForSelector(step.waitFor, { timeout: 8000 }).catch(() => {});
+          }
+          await v.triggerAction(page);
+          const vHtml = await captureSelfContained(page);
+          fs.writeFileSync(vOut, vHtml);
+          console.log(
+            `      └─ ${v.id} (${(vHtml.length / 1024).toFixed(0)} KB)`,
+          );
+        } catch (e) {
+          console.warn(`      ⚠ ${v.id} failed: ${e.message.slice(0, 160)}`);
+        }
+      }
     } catch (e) {
       console.warn(`  ⚠ ${step.id} failed: ${e.message.slice(0, 200)}`);
     }
@@ -183,6 +254,18 @@ async function captureSelfContained(page) {
     // Hide row-action menu (... triple-dot) buttons
     document.querySelectorAll('button[aria-label*="ction" i], button[aria-haspopup="menu"]').forEach((el) => {
       el.style.visibility = "hidden";
+    });
+
+    // Hide the sidebar collapse toggle — clicking it does nothing in passive mode
+    document.querySelectorAll('[data-sidebar="trigger"], [data-slot="sidebar-trigger"]').forEach((el) => {
+      el.style.display = "none";
+    });
+
+    // Hide the assistant chat bubble (floating sparkle bottom-right) — opens
+    // a sheet that's just a portal to the chat, doesn't work without JS.
+    // The dedicated /assistant tab covers that experience.
+    document.querySelectorAll('[aria-label*="assistant" i], [data-tour="ai-assistant-bubble"]').forEach((el) => {
+      el.style.display = "none";
     });
 
     // Disable form inputs so cursor doesn't suggest they're typeable

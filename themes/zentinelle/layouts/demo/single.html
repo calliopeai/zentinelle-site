@@ -125,11 +125,31 @@
     return -1;
   }
 
+  // Buttons whose click should swap to a "modal/dialog open" variant snapshot
+  // instead of no-op'ing. The base page swaps to the variant; clicking the
+  // dialog's close/cancel/X reverts back.
+  const VARIANTS = {
+    "register agent": { src: "/demo/02-agents--register.html", basePage: "agents" },
+    "create policy":  { src: "/demo/03-policies--create.html",  basePage: "policies" },
+    "create risk":    { src: "/demo/04-risks--create.html",     basePage: "risks" },
+  };
+
+  function variantForButton(text) {
+    const norm = (text || "").trim().toLowerCase().replace(/\s+/g, " ");
+    return VARIANTS[norm];
+  }
+
   const frame = document.getElementById('demo-frame');
   const tabsEl = document.getElementById('demo-tabs');
   const urlEl = document.getElementById('demo-url');
   const loader = document.getElementById('demo-loader');
-  let current = 0;
+
+  // Resolve initial tab from hash BEFORE setting iframe src so we don't
+  // load dashboard, then immediately swap it.
+  const initialHash = window.location.hash.slice(1);
+  let current = Math.max(0, PAGES.findIndex((p) => p.id === initialHash));
+  frame.src = PAGES[current].html;
+  urlEl.textContent = PAGES[current].url;
 
   function setActive(idx, opts = {}) {
     if (idx < 0 || idx >= PAGES.length) return;
@@ -165,10 +185,25 @@
       const link = e.target.closest('a[href]');
       const button = e.target.closest('button');
 
-      // Block button clicks that would call API (we're passive)
       if (button && !link) {
         e.preventDefault();
         e.stopPropagation();
+        // Check if this button opens a modal we have a variant for
+        const variant = variantForButton(button.textContent);
+        if (variant) {
+          loader.style.display = 'flex';
+          frame.src = variant.src;
+        }
+        // Cancel/close buttons inside a variant — return to base page
+        const txt = (button.textContent || '').trim().toLowerCase();
+        if (/^(cancel|close|×|x)$/.test(txt) || button.getAttribute('aria-label') === 'Close') {
+          // If we're currently showing a variant, swap back
+          const cur = frame.dataset.src || frame.src;
+          if (cur && cur.includes('--')) {
+            loader.style.display = 'flex';
+            frame.src = PAGES[current].html;
+          }
+        }
         return;
       }
       if (!link) return;
@@ -176,7 +211,6 @@
       e.preventDefault();
       e.stopPropagation();
 
-      // External links: open in new tab
       const href = link.getAttribute('href') || '';
       let url;
       try { url = new URL(link.href); } catch (_) { return; }
@@ -188,14 +222,20 @@
         return;
       }
 
-      // Map portal pathname to captured tab; switch if matched
+      // Some "Create X" actions are <a href="/x/create"> not buttons —
+      // also handle as variant openers.
+      const variant = variantForButton(link.textContent);
+      if (variant) {
+        loader.style.display = 'flex';
+        frame.src = variant.src;
+        return;
+      }
+
       const idx = pageIndexForPath(url.pathname);
       if (idx >= 0) {
         setActive(idx);
         return;
       }
-
-      // Otherwise, no-op (the page wasn't captured for the demo)
     }, true);
 
     // Block any form submission / hyperlink dragging
@@ -210,18 +250,11 @@
   PAGES.forEach((p, i) => {
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.className = 'demo-tab' + (i === 0 ? ' active' : '');
+    btn.className = 'demo-tab' + (i === current ? ' active' : '');
     btn.textContent = p.label;
     btn.addEventListener('click', () => setActive(i));
     tabsEl.appendChild(btn);
   });
-
-  // Resume from URL hash if present
-  const hash = window.location.hash.slice(1);
-  if (hash) {
-    const idx = PAGES.findIndex((p) => p.id === hash);
-    if (idx > 0) setActive(idx);
-  }
 })();
 </script>
 {{ end }}
