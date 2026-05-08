@@ -105,7 +105,19 @@ const browserPath = chromium.executablePath();
  * strip scripts. Used for steps that need page interaction first.
  */
 async function captureSelfContained(page) {
-  return await page.evaluate(async () => {
+  // Pages we have captured for the demo — sidebar links to other pages
+  // get hidden so visitors don't dead-end on a page that doesn't load.
+  const CAPTURED_PATHS = [
+    "/dashboard",
+    "/agents",
+    "/policies",
+    "/risks",
+    "/compliance",
+    "/audit-logs",
+    "/assistant",
+  ];
+
+  return await page.evaluate(async (capturedPaths) => {
     // Inline all linked stylesheets
     const links = Array.from(document.querySelectorAll('link[rel="stylesheet"]'));
     for (const link of links) {
@@ -116,24 +128,88 @@ async function captureSelfContained(page) {
         style.textContent = css;
         link.replaceWith(style);
       } catch (e) {
-        // Drop broken stylesheets silently
         link.remove();
       }
     }
 
-    // Strip <script> tags so the page is passive
+    // Strip scripts so the page is passive
     document.querySelectorAll("script").forEach((s) => s.remove());
-
-    // Strip <noscript> too
     document.querySelectorAll("noscript").forEach((n) => n.remove());
 
-    // Add base href so any relative URLs (fonts, images) resolve back to portal
+    // Hide sidebar nav links to pages we haven't captured.
+    // Allow each captured path AND its exact match — e.g. /policies/hierarchy
+    // is a sub-page of /policies but we haven't captured it, so hide.
+    const sidebarLinks = Array.from(
+      document.querySelectorAll(
+        'a[data-sidebar="menu-button"], [data-sidebar="menu"] a[href], [data-sidebar="content"] a[href], [data-sidebar="footer"] a[href]',
+      ),
+    );
+    for (const a of sidebarLinks) {
+      let pathname;
+      try { pathname = new URL(a.href, window.location.origin).pathname; } catch { continue; }
+      // External (target=_blank) or off-host: keep
+      const isExternal = a.target === "_blank" ||
+        (a.href.startsWith("http") && !a.href.includes(window.location.host));
+      if (isExternal) continue;
+
+      // Exact match against any captured path — hide everything else
+      const matches = capturedPaths.some((p) => pathname === p);
+      if (!matches) {
+        const li = a.closest("li, [data-sidebar='menu-item']");
+        (li || a).style.display = "none";
+      }
+    }
+
+    // Hide sidebar group labels whose entire group is now empty
+    document.querySelectorAll('[data-sidebar="group"]').forEach((group) => {
+      const visibleItems = Array.from(
+        group.querySelectorAll('[data-sidebar="menu-item"]'),
+      ).filter((li) => li.style.display !== "none");
+      if (visibleItems.length === 0) group.style.display = "none";
+    });
+
+    // Hide "Contact Us" / "Contact" stickies that come from the marketing
+    // theme leaking into Next.js tenants. (Belt + suspenders.)
+    document.querySelectorAll('[class*="contact"]').forEach((el) => {
+      if (/contact/i.test(el.textContent || "")) el.remove();
+    });
+
+    // Hide search inputs (they look interactive but typing does nothing)
+    document.querySelectorAll('input[type="search"], input[placeholder*="earch" i]').forEach((el) => {
+      const wrapper = el.closest('[role="search"], form, label, .search') || el;
+      wrapper.style.display = "none";
+    });
+
+    // Hide row-action menu (... triple-dot) buttons
+    document.querySelectorAll('button[aria-label*="ction" i], button[aria-haspopup="menu"]').forEach((el) => {
+      el.style.visibility = "hidden";
+    });
+
+    // Disable form inputs so cursor doesn't suggest they're typeable
+    document.querySelectorAll("textarea, input").forEach((el) => {
+      el.setAttribute("readonly", "");
+      el.style.cursor = "default";
+    });
+
+    // Add base href so font/image relative URLs resolve back to portal
     if (!document.querySelector("base")) {
       const base = document.createElement("base");
       base.href = window.location.origin;
       document.head.insertBefore(base, document.head.firstChild);
     }
 
+    // Disable native pointer cursor on every button/link by default; make
+    // explicit captured-page links keep pointer.
+    const cleanupStyle = document.createElement("style");
+    cleanupStyle.textContent = `
+      /* Pointer events stay on links/buttons (parent intercepts).
+         No visual change, but ensures hover doesn't show a wait cursor. */
+      a, button { -webkit-tap-highlight-color: transparent; }
+      /* Hide any leftover toast container (notifications, sonner) */
+      [data-sonner-toaster], [class*="Toaster"] { display: none !important; }
+    `;
+    document.head.appendChild(cleanupStyle);
+
     return "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
-  });
+  }, CAPTURED_PATHS);
 }
