@@ -90,15 +90,16 @@
 
 <script>
 (function() {
+  // Popover anchors are corners with offsets — always in-bounds.
+  // anchor: 'tl' | 'tr' | 'bl' | 'br' | 'center'
   const STEPS = [
     {
       image: "/images/demo/01-dashboard.png",
       url: "zentinelle.local/dashboard",
       title: "Real-time agent fleet health",
       description: "Every registered agent reports heartbeats, capabilities, and policy decisions. The dashboard surfaces fleet health at a glance: active count, policy violations today, recent anomalies.",
-      // Spotlight + popover positions are percentages of the image (1440x900)
       spotlight: { x: 22, y: 8, w: 76, h: 28 },
-      popover: { x: 18, y: 40 },
+      popover: { anchor: 'bl' },
     },
     {
       image: "/images/demo/02-agents.png",
@@ -106,7 +107,7 @@
       title: "Agent registry",
       description: "Every AI agent — Claude Code, Codex, LangChain, custom — registers here with a unique key. Zentinelle then sits between the agent and its LLM provider, enforcing your governance rules.",
       spotlight: { x: 22, y: 75, w: 76, h: 23 },
-      popover: { x: 25, y: 30 },
+      popover: { anchor: 'tl' },
     },
     {
       image: "/images/demo/03-policies.png",
@@ -114,7 +115,7 @@
       title: "Policy coverage at a glance",
       description: "24 policy types × 5 inheritance scopes (Org → Team → Deployment → Endpoint → User). Green cells = enforced, amber = audit-only, dashed = no policy.",
       spotlight: { x: 22, y: 25, w: 76, h: 50 },
-      popover: { x: 22, y: 78 },
+      popover: { anchor: 'br' },
     },
     {
       image: "/images/demo/04-risks.png",
@@ -122,7 +123,7 @@
       title: "FMEA risk register",
       description: "Every risk scored on Severity × Likelihood × Impact (Fibonacci). RPN ranges 1–512, color-coded. Comes with a 5×5 matrix and 30-day trend so you can show movement to leadership.",
       spotlight: { x: 22, y: 20, w: 76, h: 60 },
-      popover: { x: 24, y: 80 },
+      popover: { anchor: 'br' },
     },
     {
       image: "/images/demo/05-compliance.png",
@@ -130,7 +131,7 @@
       title: "Compliance, automated",
       description: "SOC 2, GDPR, HIPAA, EU AI Act, NIST AI RMF — each control mapped to Zentinelle features. Gap analysis flags missing capabilities and gives remediation guidance.",
       spotlight: { x: 22, y: 30, w: 76, h: 55 },
-      popover: { x: 22, y: 8 },
+      popover: { anchor: 'tr' },
     },
     {
       image: "/images/demo/06-audit.png",
@@ -138,7 +139,7 @@
       title: "Tamper-evident audit log",
       description: "Every config change is hash-chained. The Verify button recomputes the chain — if anyone tampered, you'd see exactly where it broke. Export to your SIEM in JSON, CSV, or via webhook.",
       spotlight: { x: 70, y: 8, w: 28, h: 8 },
-      popover: { x: 25, y: 40 },
+      popover: { anchor: 'bl' },
     },
     {
       image: "/images/demo/07-assistant.png",
@@ -146,7 +147,7 @@
       title: "Ask the GRC assistant",
       description: "The blue sparkle in the corner — that's an LLM with 22 tools wired into your real data. 'What policies are missing?' 'Create a rate-limit policy of 60/min.' 'Acknowledge incident X.'",
       spotlight: { x: 92, y: 88, w: 6, h: 8 },
-      popover: { x: 50, y: 38 },
+      popover: { anchor: 'tl' },
     },
     {
       image: "/images/demo/01-dashboard.png",
@@ -154,7 +155,7 @@
       title: "Ready to deploy?",
       description: "MIT-licensed. Self-hosted in minutes with Docker Compose, or scale on AWS / GCP / Azure with the included Terraform. SDKs in Python, TypeScript, Go, Java, C#.",
       spotlight: null,
-      popover: { x: 50, y: 50, center: true },
+      popover: { anchor: 'center' },
     },
   ];
 
@@ -216,38 +217,24 @@
     popover.style.bottom = '';
     popover.style.transform = '';
 
-    if (step.popover.center) {
+    const anchor = step.popover.anchor || 'tl';
+    const M = '20px'; // margin from each edge
+    if (anchor === 'center') {
       popover.style.left = '50%';
       popover.style.top = '50%';
       popover.style.transform = 'translate(-50%, -50%)';
-    } else {
-      popover.style.left = step.popover.x + '%';
-      popover.style.top = step.popover.y + '%';
-
-      // Clamp to bounds: if the popover would overflow the demo viewport,
-      // flip the anchor so it sits inside.
-      requestAnimationFrame(() => {
-        const container = document.getElementById('zentinelle-demo');
-        if (!container) return;
-        const cRect = container.getBoundingClientRect();
-        const pRect = popover.getBoundingClientRect();
-        const margin = 16;
-
-        if (pRect.bottom > cRect.bottom - margin) {
-          popover.style.top = '';
-          popover.style.bottom = (margin) + 'px';
-        }
-        if (pRect.right > cRect.right - margin) {
-          popover.style.left = '';
-          popover.style.right = (margin) + 'px';
-        }
-        if (pRect.left < cRect.left + margin) {
-          popover.style.left = margin + 'px';
-        }
-        if (pRect.top < cRect.top + margin) {
-          popover.style.top = margin + 'px';
-        }
-      });
+    } else if (anchor === 'tl') {
+      popover.style.left = M;
+      popover.style.top = M;
+    } else if (anchor === 'tr') {
+      popover.style.right = M;
+      popover.style.top = M;
+    } else if (anchor === 'bl') {
+      popover.style.left = M;
+      popover.style.bottom = M;
+    } else if (anchor === 'br') {
+      popover.style.right = M;
+      popover.style.bottom = M;
     }
 
     prev.disabled = current === 0;
