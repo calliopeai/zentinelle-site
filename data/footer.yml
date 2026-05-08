@@ -11,10 +11,10 @@ menus:
         url: https://github.com/calliopeai/zentinelle
         external: true
       - label: Docs
-        url: https://zentinelle.dev/wiki/sdk/
+        url: https://zentinelle.dev/
         external: true
       - label: SDK
-        url: https://zentinelle.dev/wiki/sdk/
+        url: https://zentinelle.dev/
         external: true
   - heading: More
     links:

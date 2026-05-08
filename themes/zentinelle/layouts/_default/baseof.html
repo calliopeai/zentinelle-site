@@ -7,8 +7,8 @@
   <meta name="description" content="{{ with .Description }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}">
 
   {{- $ogImage := .Params.ogImage | default "/images/og-default.png" -}}
-  {{- $title := if .IsHome .Site.Title (printf "%s | %s" .Title .Site.Title) -}}
-  {{- $desc := with .Description . | default .Site.Params.description -}}
+  {{- $title := cond .IsHome .Site.Title (printf "%s | %s" .Title .Site.Title) -}}
+  {{- $desc := or .Description .Site.Params.description -}}
   <meta property="og:title" content="{{ $title }}">
   <meta property="og:description" content="{{ $desc }}">
   <meta property="og:image" content="{{ .Site.BaseURL }}{{ $ogImage | strings.TrimPrefix "/" }}">

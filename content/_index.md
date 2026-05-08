@@ -6,7 +6,7 @@ strings:
     primary_cta_label: Get started on GitHub
     primary_cta_href: https://github.com/calliopeai/zentinelle
     docs_cta_label: Read the Docs
-    docs_cta_href: https://zentinelle.dev/wiki/sdk/
+    docs_cta_href: https://zentinelle.dev/
     sdk_cta_label: SDK
     sdk_cta_href: "#"
     contact_cta_label: Contact us
