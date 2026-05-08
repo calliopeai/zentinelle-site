@@ -97,14 +97,24 @@
 <script>
 (function() {
   const PAGES = [
-    { id: "dashboard", label: "Dashboard", html: "/demo/01-dashboard.html", url: "zentinelle.local/dashboard" },
-    { id: "agents", label: "Agents", html: "/demo/02-agents.html", url: "zentinelle.local/agents" },
-    { id: "policies", label: "Policies", html: "/demo/03-policies.html", url: "zentinelle.local/policies" },
-    { id: "risks", label: "Risks", html: "/demo/04-risks.html", url: "zentinelle.local/risks" },
-    { id: "compliance", label: "Compliance", html: "/demo/05-compliance.html", url: "zentinelle.local/compliance" },
-    { id: "audit", label: "Audit Logs", html: "/demo/06-audit.html", url: "zentinelle.local/audit-logs" },
-    { id: "assistant", label: "AI Assistant", html: "/demo/07-assistant.html", url: "zentinelle.local/assistant" },
+    { id: "dashboard", label: "Dashboard", html: "/demo/01-dashboard.html", url: "zentinelle.local/dashboard", paths: ["/dashboard", "/"] },
+    { id: "agents", label: "Agents", html: "/demo/02-agents.html", url: "zentinelle.local/agents", paths: ["/agents"] },
+    { id: "policies", label: "Policies", html: "/demo/03-policies.html", url: "zentinelle.local/policies", paths: ["/policies"] },
+    { id: "risks", label: "Risks", html: "/demo/04-risks.html", url: "zentinelle.local/risks", paths: ["/risks"] },
+    { id: "compliance", label: "Compliance", html: "/demo/05-compliance.html", url: "zentinelle.local/compliance", paths: ["/compliance"] },
+    { id: "audit", label: "Audit Logs", html: "/demo/06-audit.html", url: "zentinelle.local/audit-logs", paths: ["/audit-logs", "/audit"] },
+    { id: "assistant", label: "AI Assistant", html: "/demo/07-assistant.html", url: "zentinelle.local/assistant", paths: ["/assistant"] },
   ];
+
+  // Map a link's pathname to the captured page index it represents (if any).
+  function pageIndexForPath(pathname) {
+    for (let i = 0; i < PAGES.length; i++) {
+      if (PAGES[i].paths.some((p) => pathname === p || pathname.startsWith(p + "/"))) {
+        return i;
+      }
+    }
+    return -1;
+  }
 
   const frame = document.getElementById('demo-frame');
   const tabsEl = document.getElementById('demo-tabs');
@@ -112,8 +122,8 @@
   const loader = document.getElementById('demo-loader');
   let current = 0;
 
-  function setActive(idx) {
-    if (idx === current) return;
+  function setActive(idx, opts = {}) {
+    if (idx === current && !opts.force) return;
     current = idx;
     const page = PAGES[idx];
     loader.style.display = 'flex';
@@ -122,12 +132,69 @@
     tabsEl.querySelectorAll('.demo-tab').forEach((b, i) => {
       b.classList.toggle('active', i === idx);
     });
-    // Persist last tab in URL hash for shareable deep links
     history.replaceState(null, '', '#' + page.id);
+
+    // If user is scrolled past the demo, bring it back into view
+    const demo = document.getElementById('zentinelle-demo');
+    if (demo) {
+      const r = demo.getBoundingClientRect();
+      if (r.top < -80 || r.bottom < 200) {
+        demo.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  }
+
+  // Inject a click interceptor into the iframe so internal links route
+  // back to the parent's tab strip (or no-op for pages we haven't captured).
+  function wireIframeInterception() {
+    let doc;
+    try { doc = frame.contentDocument; } catch (e) { return; }
+    if (!doc || !doc.body) return;
+
+    doc.addEventListener('click', (e) => {
+      const link = e.target.closest('a[href]');
+      const button = e.target.closest('button');
+
+      // Block button clicks that would call API (we're passive)
+      if (button && !link) {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+      if (!link) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      // External links: open in new tab
+      const href = link.getAttribute('href') || '';
+      let url;
+      try { url = new URL(link.href); } catch (_) { return; }
+
+      const isExternal = url.host !== window.location.host
+        && !url.host.startsWith('localhost');
+      if (isExternal || link.target === '_blank') {
+        window.open(link.href, '_blank', 'noopener,noreferrer');
+        return;
+      }
+
+      // Map portal pathname to captured tab; switch if matched
+      const idx = pageIndexForPath(url.pathname);
+      if (idx >= 0) {
+        setActive(idx);
+        return;
+      }
+
+      // Otherwise, no-op (the page wasn't captured for the demo)
+    }, true);
+
+    // Block any form submission / hyperlink dragging
+    doc.addEventListener('submit', (e) => e.preventDefault(), true);
   }
 
   frame.addEventListener('load', () => {
     loader.style.display = 'none';
+    wireIframeInterception();
   });
 
   PAGES.forEach((p, i) => {
