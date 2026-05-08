@@ -12,6 +12,9 @@ disableFastRender = true
   docs = "https://zentinelle.dev"
   pypi = "https://pypi.org/project/zentinelle/"
   npm = "https://www.npmjs.com/package/zentinelle"
+  # Public-facing portal that hosts the live demo iframe.
+  # Override locally with HUGO_PARAMS_DEMOURL=http://localhost:8080
+  demoUrl = "https://demo.zentinelle.dev"
 
 [build]
   writeStats = true
