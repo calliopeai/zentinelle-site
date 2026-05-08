@@ -41,9 +41,14 @@
         <span id="demo-progress" class="text-xs text-[#9ca3af] font-mono">1 / 8</span>
       </div>
 
-      <div id="demo-viewport" class="relative" style="aspect-ratio: 1440/900; max-height: min(78vh, 760px); width: 100%; background:#0b0b19;">
-        <img id="demo-image" src="/images/demo/01-dashboard.png" alt="Zentinelle dashboard"
-             class="absolute inset-0 w-full h-full" style="object-fit: contain; object-position: top;" />
+      <div id="demo-viewport" class="relative" style="aspect-ratio: 1440/900; max-height: min(78vh, 760px); width: 100%; background:#0b0b19;overflow:hidden;">
+        {{/* Captured HTML mounted in an iframe — visitors can hover, scroll,
+             interact (statically) with the actual rendered portal. */}}
+        <iframe id="demo-frame" src="/demo/01-dashboard.html"
+                title="Zentinelle live demo"
+                style="position:absolute;inset:0;width:100%;height:100%;border:0;background:#0b0b19;"
+                sandbox="allow-same-origin"
+                loading="lazy"></iframe>
 
         <div id="demo-spotlight" style="display:none;position:absolute;pointer-events:none;border-radius:10px;box-shadow:0 0 0 9999px rgba(8,8,18,0.72), 0 0 0 1.5px #37efed, 0 0 32px rgba(55,239,237,0.55);transition:all 0.4s cubic-bezier(0.4, 0, 0.2, 1);"></div>
 
@@ -93,7 +98,7 @@
   // anchor: 'tl' | 'tr' | 'bl' | 'br' | 'center'
   const STEPS = [
     {
-      image: "/images/demo/01-dashboard.png",
+      html: "/demo/01-dashboard.html",
       url: "zentinelle.local/dashboard",
       title: "Real-time agent fleet health",
       description: "Every registered agent reports heartbeats, capabilities, and policy decisions. The dashboard surfaces fleet health at a glance: active count, policy violations today, recent anomalies.",
@@ -101,7 +106,7 @@
       popover: { anchor: 'bl' },
     },
     {
-      image: "/images/demo/02-agents.png",
+      html: "/demo/02-agents.html",
       url: "zentinelle.local/agents",
       title: "Agent registry",
       description: "Every AI agent — Claude Code, Codex, LangChain, custom — registers here with a unique key. Zentinelle then sits between the agent and its LLM provider, enforcing your governance rules.",
@@ -109,7 +114,7 @@
       popover: { anchor: 'tl' },
     },
     {
-      image: "/images/demo/03-policies.png",
+      html: "/demo/03-policies.html",
       url: "zentinelle.local/policies",
       title: "Policy coverage at a glance",
       description: "24 policy types × 5 inheritance scopes (Org → Team → Deployment → Endpoint → User). Green cells = enforced, amber = audit-only, dashed = no policy.",
@@ -117,7 +122,7 @@
       popover: { anchor: 'br' },
     },
     {
-      image: "/images/demo/04-risks.png",
+      html: "/demo/04-risks.html",
       url: "zentinelle.local/risks",
       title: "FMEA risk register",
       description: "Every risk scored on Severity × Likelihood × Impact (Fibonacci). RPN ranges 1–512, color-coded. Comes with a 5×5 matrix and 30-day trend so you can show movement to leadership.",
@@ -125,7 +130,7 @@
       popover: { anchor: 'br' },
     },
     {
-      image: "/images/demo/05-compliance.png",
+      html: "/demo/05-compliance.html",
       url: "zentinelle.local/compliance",
       title: "Compliance, automated",
       description: "SOC 2, GDPR, HIPAA, EU AI Act, NIST AI RMF, ISO 27001, PCI DSS, CCPA — each framework's required controls mapped to Zentinelle capabilities. Run a fresh assessment with one click.",
@@ -133,7 +138,7 @@
       popover: { anchor: 'br' },
     },
     {
-      image: "/images/demo/06-audit.png",
+      html: "/demo/06-audit.html",
       url: "zentinelle.local/audit-logs",
       title: "Tamper-evident audit log",
       description: "Every config change is hash-chained. The Verify button recomputes the chain — if anyone tampered, you'd see exactly where it broke. Export to your SIEM in JSON, CSV, or via webhook.",
@@ -141,7 +146,7 @@
       popover: { anchor: 'bl' },
     },
     {
-      image: "/images/demo/07-assistant.png",
+      html: "/demo/07-assistant.html",
       url: "zentinelle.local/assistant",
       title: "Ask the GRC assistant",
       description: "An LLM with 22 tools wired into your real data. 'What policies are missing?' 'Create a rate-limit policy of 60/min.' 'Show me open risks ranked by RPN.' Anthropic, OpenAI, Google, or any of 24 providers — your key, your model.",
@@ -149,7 +154,7 @@
       popover: { anchor: 'tl' },
     },
     {
-      image: "/images/demo/01-dashboard.png",
+      html: "/demo/01-dashboard.html",
       url: "zentinelle.local/dashboard",
       title: "Ready to deploy?",
       description: "MIT-licensed. Self-hosted in minutes with Docker Compose, or scale on AWS / GCP / Azure with the included Terraform. SDKs in Python, TypeScript, Go, Java, C#.",
@@ -160,7 +165,7 @@
 
   let current = 0;
 
-  const img = document.getElementById('demo-image');
+  const frame = document.getElementById('demo-frame');
   const urlBar = document.getElementById('demo-url-bar');
   const progress = document.getElementById('demo-progress');
   const spotlight = document.getElementById('demo-spotlight');
@@ -191,8 +196,10 @@
 
   function render() {
     const step = STEPS[current];
-    img.src = step.image;
-    img.alt = step.title;
+    if (step.html && frame.dataset.src !== step.html) {
+      frame.src = step.html;
+      frame.dataset.src = step.html;
+    }
     urlBar.textContent = step.url;
     progress.textContent = (current + 1) + ' / ' + STEPS.length;
     if (stepNum) stepNum.textContent = 'Step ' + (current + 1) + ' / ' + STEPS.length;
