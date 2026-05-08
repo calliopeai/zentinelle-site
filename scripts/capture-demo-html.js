@@ -268,6 +268,23 @@ async function captureSelfContained(page) {
       el.style.display = "none";
     });
 
+    // Normalize relative timestamps so they don't drift over time. Captures
+    // would otherwise read "2h ago" forever. Replace with stable buckets.
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    const nodes = [];
+    let n; while ((n = walker.nextNode())) nodes.push(n);
+    for (const node of nodes) {
+      const t = node.nodeValue;
+      if (!t) continue;
+      let updated = t;
+      // "Just now", "5m ago", "1h ago", "2h ago", "3d ago" → bucket
+      updated = updated.replace(/\bjust now\b/gi, "moments ago");
+      updated = updated.replace(/\b\d+\s*m\s*ago\b/gi, "minutes ago");
+      updated = updated.replace(/\b\d+\s*h\s*ago\b/gi, "earlier today");
+      updated = updated.replace(/\b\d+\s*d\s*ago\b/gi, "this week");
+      if (updated !== t) node.nodeValue = updated;
+    }
+
     // Disable form inputs so cursor doesn't suggest they're typeable
     document.querySelectorAll("textarea, input").forEach((el) => {
       el.setAttribute("readonly", "");

@@ -51,6 +51,16 @@
         border-color: rgba(55,239,237,0.5);
         box-shadow: 0 4px 14px -4px rgba(55,239,237,0.4);
       }
+
+      /* Mobile: aspect ratio is 16:10 desktop, but at narrow widths the
+         iframe content (which expects 1440px+) gets unreadable. Show a
+         polite "view on desktop" call-out instead of squishing things. */
+      @media (max-width: 760px) {
+        .demo-tab { padding: 6px 10px; font-size: 12px; }
+        #demo-mobile-msg { display: flex !important; }
+        #demo-frame { display: none !important; }
+        #zentinelle-demo > div:nth-child(2) { aspect-ratio: auto; min-height: 280px; }
+      }
     </style>
 
     <div id="zentinelle-demo" class="rounded-2xl overflow-hidden border border-white/10 bg-[#0f0f1e] shadow-2xl shadow-[#37efed]/5">
@@ -81,7 +91,22 @@
 
         <div style="position:absolute;bottom:12px;right:12px;display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;background:rgba(11,11,25,0.85);border:1px solid rgba(255,255,255,0.08);font-size:10px;color:#9ca3af;font-family:ui-monospace, SFMono-Regular, monospace;letter-spacing:0.04em;pointer-events:none;backdrop-filter:blur(6px);">
           <span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:#37efed;box-shadow:0 0 8px #37efed;"></span>
-          Snapshot · Click freely
+          Snapshot · Click freely · ←/→
+        </div>
+
+        <div id="demo-mobile-msg" style="display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;text-align:center;background:#0b0b19;">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#37efed" stroke-width="1.5">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+            <line x1="8" y1="21" x2="16" y2="21"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+          </svg>
+          <div style="font-size:14px;font-weight:600;color:#fff;">Best viewed on desktop</div>
+          <div style="font-size:13px;color:#9ca3af;max-width:300px;line-height:1.5;">
+            The portal is dense — open this page on a wider screen for the full interactive demo.
+          </div>
+          <a href="https://github.com/calliopeai/zentinelle" style="margin-top:6px;padding:8px 14px;border-radius:8px;background:#37efed;color:#0b0b19;font-size:12px;font-weight:600;text-decoration:none;">
+            See on GitHub instead
+          </a>
         </div>
       </div>
     </div>
@@ -254,6 +279,22 @@
     btn.textContent = p.label;
     btn.addEventListener('click', () => setActive(i));
     tabsEl.appendChild(btn);
+  });
+
+  // Keyboard navigation: ← / → switch tabs when the demo is in view.
+  document.addEventListener('keydown', (e) => {
+    if (e.target.matches('input, textarea')) return;
+    const demo = document.getElementById('zentinelle-demo');
+    if (!demo) return;
+    const r = demo.getBoundingClientRect();
+    if (r.bottom < 0 || r.top > window.innerHeight) return;
+    if (e.key === 'ArrowRight') {
+      setActive((current + 1) % PAGES.length);
+      e.preventDefault();
+    } else if (e.key === 'ArrowLeft') {
+      setActive((current - 1 + PAGES.length) % PAGES.length);
+      e.preventDefault();
+    }
   });
 })();
 </script>

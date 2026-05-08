@@ -5,6 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} | {{ .Site.Title }}{{ end }}</title>
   <meta name="description" content="{{ with .Description }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}">
+
+  {{- $ogImage := .Params.ogImage | default "/images/og-default.png" -}}
+  {{- $title := if .IsHome .Site.Title (printf "%s | %s" .Title .Site.Title) -}}
+  {{- $desc := with .Description . | default .Site.Params.description -}}
+  <meta property="og:title" content="{{ $title }}">
+  <meta property="og:description" content="{{ $desc }}">
+  <meta property="og:image" content="{{ .Site.BaseURL }}{{ $ogImage | strings.TrimPrefix "/" }}">
+  <meta property="og:url" content="{{ .Permalink }}">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ $title }}">
+  <meta name="twitter:description" content="{{ $desc }}">
+  <meta name="twitter:image" content="{{ .Site.BaseURL }}{{ $ogImage | strings.TrimPrefix "/" }}">
   <link rel="icon" href="/favicon.ico" sizes="256x256" type="image/x-icon">
   <link rel="stylesheet" href="/css/compiled.css">
   <link rel="stylesheet" href="/css/globals.css">
