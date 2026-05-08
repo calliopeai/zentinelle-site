@@ -34,7 +34,15 @@ const STEPS = [
   { id: "04-risks", path: "/risks", waitFor: "[data-tour='risk-overview']" },
   { id: "05-compliance", path: "/compliance", waitFor: "[data-tour='compliance-frameworks']" },
   { id: "06-audit", path: "/audit-logs", waitFor: "[data-tour='audit-chain']" },
-  { id: "07-assistant", path: "/agents", waitFor: "[data-tour='ai-assistant-bubble']" },
+  { id: "07-assistant", path: "/assistant", waitFor: null,
+    setup: async (page) => {
+      // Send a sample query so the chat panel shows real content
+      const input = await page.locator('textarea, input[placeholder*="Ask"]').first();
+      if (await input.count() > 0) {
+        await input.fill("How many open risks do I have?");
+        await page.waitForTimeout(300);
+      }
+    } },
 ];
 
 (async () => {
@@ -64,6 +72,13 @@ const STEPS = [
         await page
           .waitForSelector(step.waitFor, { timeout: 8000 })
           .catch(() => console.warn(`    (no selector match — capturing anyway)`));
+      }
+      if (step.setup) {
+        try {
+          await step.setup(page);
+        } catch (e) {
+          console.warn(`    setup failed: ${e.message}`);
+        }
       }
       // Settle: let charts/animations finish
       await page.waitForTimeout(1200);
