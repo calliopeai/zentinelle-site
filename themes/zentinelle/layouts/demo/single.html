@@ -1,7 +1,9 @@
 {{ define "main" }}
 
-{{/* Static demo: captured screenshots + scripted popovers. No iframe, no
-     backend deps. Re-capture with: node scripts/capture-demo.js */}}
+{{/* Walnut-style clickable demo: 7 self-contained HTML snapshots of the
+     portal, mounted in an iframe, with a tab strip to switch between them.
+     Visitors hover, scroll, and explore freely — no scripted popovers.
+     Re-capture with: node scripts/capture-demo-html.js */}}
 
 <section style="padding:32px 24px 48px 24px;">
   <div class="max-w-7xl mx-auto">
@@ -12,10 +14,10 @@
         Interactive Demo
       </span>
       <h1 style="font-size:clamp(28px, 3.5vw, 40px);font-weight:700;letter-spacing:-0.025em;line-height:1.1;color:#fff;margin:0 0 10px 0;">
-        See Zentinelle in <span style="color:#37efed;">90 seconds</span>.
+        Click around <span style="color:#37efed;">the actual portal</span>.
       </h1>
       <p style="font-size:14px;line-height:1.5;color:#9ca3af;max-width:560px;margin:0 auto;">
-        A scripted tour of the GRC portal — no signup, no install. Captured from a real instance with seeded data.
+        Captured from a real Zentinelle instance with seeded data. Pick a page below and explore. No signup, no install.
       </p>
     </div>
     <style>
@@ -23,63 +25,63 @@
         0%, 100% { opacity: 1; transform: scale(1); }
         50% { opacity: 0.6; transform: scale(0.85); }
       }
+      .demo-tab {
+        padding: 8px 14px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 500;
+        color: #9ca3af;
+        background: transparent;
+        border: 1px solid transparent;
+        cursor: pointer;
+        transition: all 0.18s;
+        white-space: nowrap;
+      }
+      .demo-tab:hover {
+        color: #fff;
+        background: rgba(255,255,255,0.04);
+      }
+      .demo-tab.active {
+        color: #0b0b19;
+        background: linear-gradient(180deg, #37efed 0%, #28d4d2 100%);
+        border-color: rgba(55,239,237,0.5);
+        box-shadow: 0 4px 14px -4px rgba(55,239,237,0.4);
+      }
     </style>
 
-    <div id="zentinelle-demo" class="relative rounded-2xl overflow-hidden border border-white/10 bg-[#0f0f1e] shadow-2xl shadow-[#37efed]/5">
+    <div id="zentinelle-demo" class="rounded-2xl overflow-hidden border border-white/10 bg-[#0f0f1e] shadow-2xl shadow-[#37efed]/5">
 
-      <div class="flex items-center gap-2 px-4 py-3 border-b border-white/8 bg-[#0a0a14]">
-        <div class="flex gap-1.5">
-          <span class="size-3 rounded-full bg-[#ff5f57]"></span>
-          <span class="size-3 rounded-full bg-[#febc2e]"></span>
-          <span class="size-3 rounded-full bg-[#28c840]"></span>
+      {{/* Tab strip — one per captured page. Picking a tab swaps iframe src. */}}
+      <div style="display:flex;align-items:center;gap:6px;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.06);background:#0a0a14;overflow-x:auto;scrollbar-width:thin;">
+        <div style="display:flex;gap:4px;margin-right:14px;flex-shrink:0;">
+          <span style="width:11px;height:11px;border-radius:50%;background:#ff5f57;"></span>
+          <span style="width:11px;height:11px;border-radius:50%;background:#febc2e;"></span>
+          <span style="width:11px;height:11px;border-radius:50%;background:#28c840;"></span>
         </div>
-        <div class="flex-1 text-center">
-          <span id="demo-url-bar" class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-md bg-white/5 text-xs text-[#9ca3af] font-mono">
-            zentinelle.local/dashboard
-          </span>
-        </div>
-        <span id="demo-progress" class="text-xs text-[#9ca3af] font-mono">1 / 8</span>
+        <div id="demo-tabs" style="display:flex;gap:2px;flex:1;"></div>
+        <span id="demo-url" style="margin-left:14px;padding:4px 10px;border-radius:6px;background:rgba(255,255,255,0.04);color:#9ca3af;font-size:11px;font-family:ui-monospace, SFMono-Regular, monospace;flex-shrink:0;">
+          zentinelle.local/dashboard
+        </span>
       </div>
 
-      <div id="demo-viewport" class="relative" style="aspect-ratio: 1440/900; max-height: min(78vh, 760px); width: 100%; background:#0b0b19;overflow:hidden;">
-        {{/* Captured HTML mounted in an iframe — visitors can hover, scroll,
-             interact (statically) with the actual rendered portal. */}}
+      <div style="position:relative;aspect-ratio:1440/900;max-height:min(76vh, 760px);width:100%;background:#0b0b19;overflow:hidden;">
         <iframe id="demo-frame" src="/demo/01-dashboard.html"
                 title="Zentinelle live demo"
                 style="position:absolute;inset:0;width:100%;height:100%;border:0;background:#0b0b19;"
                 sandbox="allow-same-origin"
                 loading="lazy"></iframe>
 
-        <div id="demo-spotlight" style="display:none;position:absolute;pointer-events:none;border-radius:10px;box-shadow:0 0 0 9999px rgba(8,8,18,0.72), 0 0 0 1.5px #37efed, 0 0 32px rgba(55,239,237,0.55);transition:all 0.4s cubic-bezier(0.4, 0, 0.2, 1);"></div>
-
-        <div id="demo-popover" style="position:absolute;width:340px;max-width:calc(100% - 40px);background:linear-gradient(180deg, rgba(20,20,38,0.98) 0%, rgba(11,11,25,0.98) 100%);backdrop-filter:blur(12px);border-radius:14px;padding:0;transition:all 0.4s cubic-bezier(0.4, 0, 0.2, 1);overflow:hidden;box-shadow:0 30px 60px -15px rgba(0,0,0,0.6), 0 0 0 1px rgba(55,239,237,0.18), 0 0 40px -10px rgba(55,239,237,0.25);">
-          <div style="position:absolute;inset:0;border-radius:14px;padding:1px;background:linear-gradient(135deg, rgba(55,239,237,0.45) 0%, rgba(55,239,237,0.05) 50%, rgba(123,93,255,0.25) 100%);-webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;"></div>
-
-          <div style="position:relative;padding:18px 18px 16px 18px;">
-            <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;">
-              <span id="demo-step-pill" style="display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:999px;background:rgba(55,239,237,0.12);border:1px solid rgba(55,239,237,0.3);color:#37efed;font-size:10px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;font-family:ui-monospace, SFMono-Regular, monospace;">
-                <span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:#37efed;box-shadow:0 0 8px #37efed;"></span>
-                <span id="demo-step-num">Step 1 / 8</span>
-              </span>
-            </div>
-            <h3 id="demo-title" style="font-weight:600;color:#fff;font-size:16px;line-height:1.35;margin:0 0 8px 0;letter-spacing:-0.01em;">Welcome to Zentinelle</h3>
-            <p id="demo-description" style="font-size:13px;color:#a8acba;line-height:1.55;margin:0 0 16px 0;">
-              Click through to see how AI agent governance works.
-            </p>
-            <div style="display:flex;align-items:center;gap:8px;">
-              <button id="demo-prev" type="button" style="padding:7px 14px;border-radius:8px;font-size:12px;font-weight:500;color:#a8acba;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);cursor:pointer;transition:all 0.2s;">
-                ← Back
-              </button>
-              <button id="demo-next" type="button" style="flex:1;padding:7px 14px;border-radius:8px;background:linear-gradient(180deg, #37efed 0%, #28d4d2 100%);color:#0b0b19;font-size:12px;font-weight:600;border:none;cursor:pointer;transition:all 0.2s;letter-spacing:0.01em;box-shadow:0 4px 14px -4px rgba(55,239,237,0.45);">
-                Next →
-              </button>
-            </div>
-          </div>
+        <div id="demo-loader" style="position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(11,11,25,0.7);backdrop-filter:blur(4px);pointer-events:none;">
+          <div style="width:32px;height:32px;border:2px solid rgba(55,239,237,0.2);border-top-color:#37efed;border-radius:50%;animation:demo-spin 0.7s linear infinite;"></div>
         </div>
       </div>
     </div>
 
-    <div style="margin-top:40px;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:16px;font-size:14px;color:#a8acba;">
+    <style>
+      @keyframes demo-spin { to { transform: rotate(360deg); } }
+    </style>
+
+    <div style="margin-top:32px;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:16px;font-size:14px;color:#a8acba;">
       <a href="https://github.com/calliopeai/zentinelle" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:10px;padding:10px 18px;border-radius:10px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.02);color:#a8acba;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(55,239,237,0.5)';this.style.color='#fff';" onmouseout="this.style.borderColor='rgba(255,255,255,0.12)';this.style.color='#a8acba';">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
         <span>Run it yourself: <code style="color:#fff;background:rgba(55,239,237,0.1);padding:2px 6px;border-radius:4px;font-size:12px;">docker compose up</code></span>
@@ -94,182 +96,55 @@
 
 <script>
 (function() {
-  // Popover anchors are corners with offsets — always in-bounds.
-  // anchor: 'tl' | 'tr' | 'bl' | 'br' | 'center'
-  const STEPS = [
-    {
-      html: "/demo/01-dashboard.html",
-      url: "zentinelle.local/dashboard",
-      title: "Real-time agent fleet health",
-      description: "Every registered agent reports heartbeats, capabilities, and policy decisions. The dashboard surfaces fleet health at a glance: active count, policy violations today, recent anomalies.",
-      spotlight: { x: 22, y: 8, w: 76, h: 28 },
-      popover: { anchor: 'bl' },
-    },
-    {
-      html: "/demo/02-agents.html",
-      url: "zentinelle.local/agents",
-      title: "Agent registry",
-      description: "Every AI agent — Claude Code, Codex, LangChain, custom — registers here with a unique key. Zentinelle then sits between the agent and its LLM provider, enforcing your governance rules.",
-      spotlight: { x: 22, y: 75, w: 76, h: 23 },
-      popover: { anchor: 'tl' },
-    },
-    {
-      html: "/demo/03-policies.html",
-      url: "zentinelle.local/policies",
-      title: "Policy coverage at a glance",
-      description: "24 policy types × 5 inheritance scopes (Org → Team → Deployment → Endpoint → User). Green cells = enforced, amber = audit-only, dashed = no policy.",
-      spotlight: { x: 22, y: 25, w: 76, h: 50 },
-      popover: { anchor: 'br' },
-    },
-    {
-      html: "/demo/04-risks.html",
-      url: "zentinelle.local/risks",
-      title: "FMEA risk register",
-      description: "Every risk scored on Severity × Likelihood × Impact (Fibonacci). RPN ranges 1–512, color-coded. Comes with a 5×5 matrix and 30-day trend so you can show movement to leadership.",
-      spotlight: { x: 22, y: 20, w: 76, h: 60 },
-      popover: { anchor: 'br' },
-    },
-    {
-      html: "/demo/05-compliance.html",
-      url: "zentinelle.local/compliance",
-      title: "Compliance, automated",
-      description: "SOC 2, GDPR, HIPAA, EU AI Act, NIST AI RMF, ISO 27001, PCI DSS, CCPA — each framework's required controls mapped to Zentinelle capabilities. Run a fresh assessment with one click.",
-      spotlight: { x: 22, y: 10, w: 76, h: 40 },
-      popover: { anchor: 'br' },
-    },
-    {
-      html: "/demo/06-audit.html",
-      url: "zentinelle.local/audit-logs",
-      title: "Tamper-evident audit log",
-      description: "Every config change is hash-chained. The Verify button recomputes the chain — if anyone tampered, you'd see exactly where it broke. Export to your SIEM in JSON, CSV, or via webhook.",
-      spotlight: { x: 70, y: 8, w: 28, h: 8 },
-      popover: { anchor: 'bl' },
-    },
-    {
-      html: "/demo/07-assistant.html",
-      url: "zentinelle.local/assistant",
-      title: "Ask the GRC assistant",
-      description: "An LLM with 22 tools wired into your real data. 'What policies are missing?' 'Create a rate-limit policy of 60/min.' 'Show me open risks ranked by RPN.' Anthropic, OpenAI, Google, or any of 24 providers — your key, your model.",
-      spotlight: { x: 30, y: 82, w: 60, h: 13 },
-      popover: { anchor: 'tl' },
-    },
-    {
-      html: "/demo/01-dashboard.html",
-      url: "zentinelle.local/dashboard",
-      title: "Ready to deploy?",
-      description: "MIT-licensed. Self-hosted in minutes with Docker Compose, or scale on AWS / GCP / Azure with the included Terraform. SDKs in Python, TypeScript, Go, Java, C#.",
-      spotlight: null,
-      popover: { anchor: 'center' },
-    },
+  const PAGES = [
+    { id: "dashboard", label: "Dashboard", html: "/demo/01-dashboard.html", url: "zentinelle.local/dashboard" },
+    { id: "agents", label: "Agents", html: "/demo/02-agents.html", url: "zentinelle.local/agents" },
+    { id: "policies", label: "Policies", html: "/demo/03-policies.html", url: "zentinelle.local/policies" },
+    { id: "risks", label: "Risks", html: "/demo/04-risks.html", url: "zentinelle.local/risks" },
+    { id: "compliance", label: "Compliance", html: "/demo/05-compliance.html", url: "zentinelle.local/compliance" },
+    { id: "audit", label: "Audit Logs", html: "/demo/06-audit.html", url: "zentinelle.local/audit-logs" },
+    { id: "assistant", label: "AI Assistant", html: "/demo/07-assistant.html", url: "zentinelle.local/assistant" },
   ];
 
+  const frame = document.getElementById('demo-frame');
+  const tabsEl = document.getElementById('demo-tabs');
+  const urlEl = document.getElementById('demo-url');
+  const loader = document.getElementById('demo-loader');
   let current = 0;
 
-  const frame = document.getElementById('demo-frame');
-  const urlBar = document.getElementById('demo-url-bar');
-  const progress = document.getElementById('demo-progress');
-  const spotlight = document.getElementById('demo-spotlight');
-  const popover = document.getElementById('demo-popover');
-  const title = document.getElementById('demo-title');
-  const desc = document.getElementById('demo-description');
-  const stepNum = document.getElementById('demo-step-num');
-  const prev = document.getElementById('demo-prev');
-  const next = document.getElementById('demo-next');
-
-  // Hover effects (inline-styled buttons need JS hover)
-  prev.addEventListener('mouseenter', () => {
-    if (!prev.disabled) { prev.style.background = 'rgba(255,255,255,0.08)'; prev.style.color = '#fff'; }
-  });
-  prev.addEventListener('mouseleave', () => {
-    prev.style.background = 'rgba(255,255,255,0.04)'; prev.style.color = '#a8acba';
-  });
-  next.addEventListener('mouseenter', () => {
-    next.style.background = 'linear-gradient(180deg, #5cf5f3 0%, #37efed 100%)';
-    next.style.transform = 'translateY(-1px)';
-    next.style.boxShadow = '0 6px 18px -4px rgba(55,239,237,0.6)';
-  });
-  next.addEventListener('mouseleave', () => {
-    next.style.background = 'linear-gradient(180deg, #37efed 0%, #28d4d2 100%)';
-    next.style.transform = 'none';
-    next.style.boxShadow = '0 4px 14px -4px rgba(55,239,237,0.45)';
-  });
-
-  function render() {
-    const step = STEPS[current];
-    if (step.html && frame.dataset.src !== step.html) {
-      frame.src = step.html;
-      frame.dataset.src = step.html;
-    }
-    urlBar.textContent = step.url;
-    progress.textContent = (current + 1) + ' / ' + STEPS.length;
-    if (stepNum) stepNum.textContent = 'Step ' + (current + 1) + ' / ' + STEPS.length;
-    title.textContent = step.title;
-    desc.textContent = step.description;
-
-    if (step.spotlight) {
-      spotlight.style.display = 'block';
-      spotlight.style.left = step.spotlight.x + '%';
-      spotlight.style.top = step.spotlight.y + '%';
-      spotlight.style.width = step.spotlight.w + '%';
-      spotlight.style.height = step.spotlight.h + '%';
-    } else {
-      spotlight.style.display = 'none';
-    }
-
-    // Reset all positioning props each render
-    popover.style.left = '';
-    popover.style.right = '';
-    popover.style.top = '';
-    popover.style.bottom = '';
-    popover.style.transform = '';
-
-    const anchor = step.popover.anchor || 'tl';
-    const M = '20px'; // margin from each edge
-    if (anchor === 'center') {
-      popover.style.left = '50%';
-      popover.style.top = '50%';
-      popover.style.transform = 'translate(-50%, -50%)';
-    } else if (anchor === 'tl') {
-      popover.style.left = M;
-      popover.style.top = M;
-    } else if (anchor === 'tr') {
-      popover.style.right = M;
-      popover.style.top = M;
-    } else if (anchor === 'bl') {
-      popover.style.left = M;
-      popover.style.bottom = M;
-    } else if (anchor === 'br') {
-      popover.style.right = M;
-      popover.style.bottom = M;
-    }
-
-    prev.disabled = current === 0;
-    prev.style.opacity = current === 0 ? '0.35' : '1';
-    prev.style.cursor = current === 0 ? 'not-allowed' : 'pointer';
-    next.textContent = current === STEPS.length - 1 ? '↻ Restart' : 'Next →';
+  function setActive(idx) {
+    if (idx === current) return;
+    current = idx;
+    const page = PAGES[idx];
+    loader.style.display = 'flex';
+    frame.src = page.html;
+    urlEl.textContent = page.url;
+    tabsEl.querySelectorAll('.demo-tab').forEach((b, i) => {
+      b.classList.toggle('active', i === idx);
+    });
+    // Persist last tab in URL hash for shareable deep links
+    history.replaceState(null, '', '#' + page.id);
   }
 
-  prev.addEventListener('click', () => {
-    if (current > 0) { current--; render(); }
+  frame.addEventListener('load', () => {
+    loader.style.display = 'none';
   });
 
-  next.addEventListener('click', () => {
-    if (current < STEPS.length - 1) {
-      current++;
-    } else {
-      current = 0;
-    }
-    render();
+  PAGES.forEach((p, i) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'demo-tab' + (i === 0 ? ' active' : '');
+    btn.textContent = p.label;
+    btn.addEventListener('click', () => setActive(i));
+    tabsEl.appendChild(btn);
   });
 
-  document.addEventListener('keydown', (e) => {
-    const demoVisible = document.getElementById('zentinelle-demo')?.getBoundingClientRect();
-    if (!demoVisible || demoVisible.bottom < 0 || demoVisible.top > window.innerHeight) return;
-    if (e.key === 'ArrowRight' || e.key === ' ') { next.click(); e.preventDefault(); }
-    if (e.key === 'ArrowLeft') { prev.click(); e.preventDefault(); }
-  });
-
-  render();
+  // Resume from URL hash if present
+  const hash = window.location.hash.slice(1);
+  if (hash) {
+    const idx = PAGES.findIndex((p) => p.id === hash);
+    if (idx > 0) setActive(idx);
+  }
 })();
 </script>
 {{ end }}
