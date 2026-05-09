@@ -19,8 +19,8 @@ menus:
   - heading: More
     links:
       - label: Calliope AI
-        url: "#"
-        external: false
+        url: https://calliope.ai
+        external: true
       - label: Privacy Policy
         url: "#"
         external: false
@@ -48,4 +48,4 @@ contact_form:
 credit:
   prefix: Built with love by
   label: Calliope Labs
-  url: "#"
+  url: https://calliope.ai
