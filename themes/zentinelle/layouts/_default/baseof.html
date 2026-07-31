@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} | {{ .Site.Title }}{{ end }}</title>
   <meta name="description" content="{{ with .Description }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}">
+  {{ if eq .Kind "404" }}<meta name="robots" content="noindex">{{ else }}<link rel="canonical" href="{{ .Permalink }}">{{ end }}
 
   {{- $ogImage := .Params.ogImage | default "/images/og-default.png" -}}
   {{- $title := cond .IsHome .Site.Title (printf "%s | %s" .Title .Site.Title) -}}
