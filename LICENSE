@@ -1,0 +1,27 @@
+PROPRIETARY AND CONFIDENTIAL
+
+Copyright (c) 2026 Calliope Labs Inc. All rights reserved.
+
+This repository contains the Zentinelle AI marketing site: its content, copy,
+design, and build configuration. It is proprietary and confidential to Calliope
+Labs Inc.
+
+No license is granted, expressly or by implication, to any person to use, copy,
+modify, merge, publish, distribute, sublicense, or sell any part of it, or to
+create derivative works from it, except under a separate written agreement
+signed by Calliope Labs Inc.
+
+Unauthorized copying, distribution, or use, in whole or in part, by any means,
+is prohibited.
+
+This repository is not open source. **Zentinelle AI itself is.** The product
+this site describes is MIT-licensed and free to use, self-host, modify, and
+redistribute; see the `zentinelle` and `zentinelle-sdk` repositories. Only the
+marketing site is proprietary, on the same basis as any other company's website,
+and no grant made in those repositories extends to this one.
+
+Calliope AI and Zentinelle are trademarks of Calliope Labs Inc.
+
+THE CONTENTS ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
