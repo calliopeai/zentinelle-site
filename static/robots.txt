@@ -2,7 +2,7 @@
 # Policy: every crawler is welcome, search engines and AI crawlers alike,
 # training crawlers included. Everything served here is public marketing and
 # documentation content; it exists to be read, indexed, and quoted back.
-# Agent-oriented summaries live at /llms.txt and /llms-full.txt.
+# An agent-oriented summary of this site lives at /llms.txt.
 
 User-agent: *
 Allow: /
