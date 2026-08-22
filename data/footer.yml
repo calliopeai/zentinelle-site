@@ -29,8 +29,8 @@ menus:
         external: false
   - heading: "Contact us"
     links:
-      - label: hello@zentinelle.com
-        url: mailto:hello@zentinelle.com
+      - label: hello@calliope.ai
+        url: mailto:hello@calliope.ai
         external: false
 contact_form:
   name_label: Name

@@ -520,13 +520,13 @@
     formFooter.className = "flex items-center justify-between gap-3 pt-[2px]";
 
     var emailLink = document.createElement("a");
-    emailLink.href = "mailto:hello@zentinelle.com";
+    emailLink.href = "mailto:hello@calliope.ai";
     emailLink.className = "text-[#ccccd8]/50 text-[12px] hover:text-[#37efed] transition-colors flex items-center gap-[6px]";
     emailLink.style.cssText = "font-family:var(--font-sora), sans-serif;";
     emailLink.innerHTML =
       '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
       '<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M22 6l-10 7L2 6"/></svg>' +
-      'hello@zentinelle.com';
+      'hello@calliope.ai';
     formFooter.appendChild(emailLink);
 
     var sendBtn = document.createElement("button");
