@@ -1,17 +1,20 @@
-{{- /* Organization @id matches calliope.ai's graph so all Calliope properties
-       resolve to one publisher entity rather than separate organisations. */ -}}
+{{- /* Structured data. Reference-only: https://calliope.ai/#organization and
+       https://calliope.ai/#platform are DEFINED once, on calliope.ai, in
+       layouts/partials/refresh/jsonld.html. Do not restate their properties here.
+       Two sites describing one @id with different name/url values makes consumers
+       merge contradictory claims about a single entity, and the winner is decided
+       by crawl order. Reference the @id, describe only what this site owns. */ -}}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@graph": [
-    { "@type": "Organization", "@id": "https://calliope.ai/#organization",
-      "name": "Calliope AI", "legalName": "Calliope Labs Inc", "url": "https://zentinelle.ai/",
-      "sameAs": ["https://x.com/calliopelabs","https://www.linkedin.com/company/calliopelabsinc/","https://github.com/CalliopeAI"] },
     { "@type": "WebSite", "@id": "https://zentinelle.ai/#website", "url": "https://zentinelle.ai/",
-      "name": {{ site.Title }}, "publisher": { "@id": "https://calliope.ai/#organization" } },
+      "name": {{ site.Title }}, "inLanguage": "en",
+      "publisher": { "@id": "https://calliope.ai/#organization" } },
     { "@type": "SoftwareApplication", "@id": "https://zentinelle.ai/#app",
       "name": "Zentinelle AI", "applicationCategory": "SecurityApplication", "operatingSystem": "Web, Linux",
       "url": "https://zentinelle.ai/", "description": {{ site.Params.description }},
+      "isPartOf": { "@id": "https://calliope.ai/#platform" },
       "publisher": { "@id": "https://calliope.ai/#organization" } }
   ]
 }

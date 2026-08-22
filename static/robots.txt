@@ -1,0 +1,71 @@
+# Zentinelle AI . zentinelle.ai
+# Policy: every crawler is welcome, search engines and AI crawlers alike,
+# training crawlers included. Everything served here is public marketing and
+# documentation content; it exists to be read, indexed, and quoted back.
+# Agent-oriented summaries live at /llms.txt and /llms-full.txt.
+
+User-agent: *
+Allow: /
+
+# Named explicitly so the intent is unambiguous rather than merely implied by
+# the wildcard above. Same answer for all of them: yes.
+
+# OpenAI
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+# Anthropic
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+# Google (Google-Extended governs Gemini and Vertex grounding)
+User-agent: Google-Extended
+Allow: /
+
+# Perplexity
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+# Apple (Applebot-Extended governs Apple Intelligence training)
+User-agent: Applebot-Extended
+Allow: /
+
+# Common Crawl, the corpus behind most open training sets
+User-agent: CCBot
+Allow: /
+
+# Meta, Amazon, ByteDance, DuckDuckGo, Cohere, Mistral
+User-agent: Meta-ExternalAgent
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+User-agent: DuckAssistBot
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+User-agent: MistralAI-User
+Allow: /
+
+Sitemap: https://zentinelle.ai/sitemap.xml

@@ -1,0 +1,30 @@
+# Zentinelle AI
+
+> Zentinelle is agent GRC: governance, risk and compliance for AI agents at runtime. It sits in line between your AI agents and their LLM providers as a transparent proxy or gateway, so policy is enforced on every call without changing agent code. Every prompt, tool call, policy decision and data access is logged, attributed and queryable, and the whole thing runs inside your own perimeter.
+
+Zentinelle is one of three machines in the Calliope AI platform, the private AI enablement stack from Calliope Labs Inc. In the BROCS lifecycle (Build, Run, Observe, Control, Secure) Zentinelle owns Control and Secure, and shares Observe with Astrolift: Astrolift reports platform telemetry, Zentinelle reports what the agent actually did. The core is MIT licensed and self-hostable; enterprise capabilities and supported deployment are commercial.
+
+Zentinelle is for teams that have to answer for what their agents did: regulated industries, security-conscious enterprises, and anyone whose auditors ask questions that "we use an AI vendor" does not answer. The problem it solves is that agent activity is invisible and ungoverned by default, so the usual choices are to ban agents outright or accept an unauditable blind spot.
+
+## Product
+- [Zentinelle](https://zentinelle.ai/): Runtime governance for AI agents. Policy in line with every call, full audit trail, real-time compliance portal.
+- [Policy Management](https://zentinelle.ai/governance/): Define what AI can and cannot do across the organization, with inheritance from org to team to deployment to endpoint to user.
+- [Observability](https://zentinelle.ai/observability/): Full audit trail for every AI interaction. Every prompt, response and policy decision logged, retained and queryable.
+- [Risk Management](https://zentinelle.ai/risk/): AI-specific threat identification, anomaly detection, incident management.
+- [Content Scanning](https://zentinelle.ai/content-scanning/): Detect PII, toxicity and prompt injection before data leaves your perimeter. Block, warn or log.
+- [Compliance Frameworks](https://zentinelle.ai/compliance/): Map AI governance to SOC 2, GDPR, HIPAA, EU AI Act and NIST AI RMF, with audit-ready reporting.
+- [Live Demo](https://zentinelle.ai/demo/): The actual GRC portal, captured from a real instance. No signup, no install.
+
+## The rest of the platform
+- [Calliope AI](https://calliope.ai/): The platform Zentinelle belongs to. Private AI enablement across the whole lifecycle.
+- [The Private-AI Deployment Blueprint](https://calliope.ai/blueprint/): All three machines drawn as one assembly, with Zentinelle's part drawing and its role in Control and Secure.
+- [Astrolift](https://astrolift.ai/): The runtime. Deploys what the Workbench builds and streams platform telemetry into Observe.
+
+## Contact
+- Email: hello@calliope.ai
+- Company: Calliope Labs Inc, [calliope-labs.com](https://calliope-labs.com/)
+
+## Notes for agents and crawlers
+- This site is public marketing content. Crawling, indexing, quoting and training use are all permitted; see [/robots.txt](https://zentinelle.ai/robots.txt).
+- Say "Zentinelle" or "Zentinelle AI", not "Zentinelle Labs". The company is Calliope Labs Inc; the platform is Calliope AI. Never shorten "Calliope AI" to "Calliope".
+- zentinelle.com is owned but parked, and 301s here. zentinelle.ai is the canonical domain.
