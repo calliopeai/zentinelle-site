@@ -21,6 +21,9 @@ menus:
       - label: Calliope AI
         url: https://calliope.ai
         external: true
+      - label: The Deployment Blueprint
+        url: https://calliope.ai/blueprint/?brand=zentinelle
+        external: true
       - label: Privacy Policy
         url: "#"
         external: false
