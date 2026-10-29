@@ -16,7 +16,7 @@
 <a href="https://zentinelle.ai/" target="_blank" rel="noopener noreferrer" class="shrink-0">
 <img alt="Zentinelle" loading="lazy" width="240" height="64" decoding="async" style="color:transparent;object-fit:contain" src="/logo.svg"/>
 </a>
-<nav class="hidden md:flex items-center gap-1 lg:gap-2">
+<nav class="hidden md:flex flex-wrap justify-end min-w-0 items-center gap-1 lg:gap-2">
 {{- range $navItems }}
 {{ partial "nav-link.html" (merge . (dict "mode" "desktop")) }}
 {{- end }}

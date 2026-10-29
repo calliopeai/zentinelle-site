@@ -1,6 +1,6 @@
 ---
-title: Zentinelle — Runtime Governance for AI Agents
-description: Zentinelle sits between your AI agents and their LLM providers, enforcing policies, logging every action, and providing a real-time compliance dashboard.
+title: Zentinelle AI | Agent policy and observability
+description: Evaluate policy and record activity for connected AI agents. Coverage depends on supported integrations and configured enforcement points.
 strings:
   shared:
     primary_cta_label: Get started on GitHub
@@ -8,24 +8,24 @@ strings:
     docs_cta_label: Read the Docs
     docs_cta_href: https://zentinelle.dev/
     sdk_cta_label: SDK
-    sdk_cta_href: "#"
+    sdk_cta_href: '#'
     contact_cta_label: Contact us
-    contact_cta_href: "#contact"
+    contact_cta_href: '#contact'
   hero:
-    v001_alpha_mit_license_actively_developed: v0.0.1 alpha  ·  MIT License  ·  Actively developed
+    v001_alpha_mit_license_actively_developed: MIT-licensed core · Self-hosted · Integration-dependent coverage
     hero_title_line_1: Runtime governance
     hero_title_line_2_prefix: for
     ai_agents: AI agents.
-    zentinelle_sits_between_your_ai_agents_their: Zentinelle sits between your AI agents & their LLM providers
+    zentinelle_sits_between_your_ai_agents_their: Connect Zentinelle AI to your agents and approved model endpoints
     enforcing_policies: enforcing policies
-    logging_every_action: logging every action
-    realtime_compliance_dashboard: real-time compliance dashboard
+    logging_every_action: recording connected activity
+    realtime_compliance_dashboard: policy and evidence dashboards
   architecture:
     architecture_label: Architecture
-    architecture_headline_line_1: In the middle of everything.
-    architecture_headline_line_2_prefix: Invisible to
+    architecture_headline_line_1: Policy at the integration point.
+    architecture_headline_line_2_prefix: Connected to
     your_agents: your agents.
-    zentinelle_intercepts_every_llm_call_and_tool: Zentinelle intercepts every LLM call and tool use — applying your policies in real time, logging results, and reporting compliance. Your agents keep running unchanged.
+    zentinelle_intercepts_every_llm_call_and_tool: Zentinelle AI evaluates requests and records activity received through supported hooks, SDK, proxy or gateway integrations. Configure the relevant enforcement points for each agent.
     policies_enforced: 'Policies enforced:'
     rate_limits: rate limits
     tool_permissions: tool permissions
@@ -49,24 +49,24 @@ strings:
     google: Google
   features:
     capabilities: Capabilities
-    features_headline_prefix: What Zentinelle
-    gives_you: gives you.
-    policy_enforcement_observability_compliance_a: Policy enforcement, observability, compliance, and enterprise resilience — all in one runtime layer.
+    features_headline_prefix: Zentinelle AI
+    gives_you: capabilities
+    policy_enforcement_observability_compliance_a: Agent policy, observability and evidence through supported integrations.
     policy_enforcement: Policy Enforcement
     rate_limits_cost_controls_tool_allowlistsbloc: Rate limits, cost controls, tool allowlists/blocklists, model restrictions, PII detection and masking, human-in-the-loop approvals.
     realtime_observability: Real-time Observability
-    every_tool_call_every_llm_invocation_visible: Every tool call, every LLM invocation — visible in the dashboard. Token usage, latency, error rates, and agent behavior in one place.
+    every_tool_call_every_llm_invocation_visible: Inspect tool calls and model requests received through connected integrations, including usage, latency and errors where reported.
     compliance_frameworks: Compliance Frameworks
-    builtin_dashboards_for_soc2_gdpr_hipaa_eu_ai: Built-in dashboards for SOC2, GDPR, HIPAA, EU AI Act, and NIST AI RMF. Audit trails that satisfy reviewers without manual work.
+    builtin_dashboards_for_soc2_gdpr_hipaa_eu_ai: Organize policy and activity evidence against compliance frameworks. Mappings support review; they do not certify your organization or deployment.
     audit_logging: Audit Logging
-    immutable_logs_of_every_agent_action_policy_d: Immutable logs of every agent action, policy decision, and LLM response. Know exactly what your agents did and why it was allowed.
+    immutable_logs_of_every_agent_action_policy_d: Retain agent events, policy decisions and model activity received by Zentinelle AI. Set retention and storage controls for your deployment.
     enterprise_resilience: Enterprise Resilience
     circuit_breaker_pattern_retry_with_exponentia: Circuit breaker pattern, retry with exponential backoff, fail-open mode for non-critical paths, event buffering and batching.
     multiagent_support: Multi-agent Support
-    track_claude_code_codex_gemini_cli_and_custom: Track Claude Code, Codex, Gemini CLI, and custom agents side-by-side. One governance layer for your entire AI agent fleet.
+    track_claude_code_codex_gemini_cli_and_custom: Connect supported agent runtimes and custom integrations. Verify event coverage and enforcement for each runtime.
   alpha_status:
     alpha: Alpha.
-    honest_about_it: Honest about it.
+    honest_about_it: Validate your integration.
     live: LIVE
     openai_codex: OpenAI Codex
     zentinelle_is_early_were_shipping_fast_we_wan: Zentinelle is early. We're shipping fast, we want contributors, and we're looking for teams who want to help shape what AI agent governance looks like.
@@ -90,9 +90,9 @@ strings:
     langchain_callback_handlers: LangChain callback handlers
   quick_start:
     quick_start_label: Quick Start
-    up_in: Up in
-    five_minutes: five minutes.
-    clone_the_repo_run_docker_compose_point_your: Clone the repo, run Docker Compose, point your agent at the proxy. That's it.
+    up_in: Start a
+    five_minutes: local evaluation.
+    clone_the_repo_run_docker_compose_point_your: Start a local deployment, configure an agent integration and verify the events and policy decisions it reports.
     clone_and_start: Clone and start
     git: git
     clone_httpsgithubcomcalliopeaizentinelle: clone https://github.com/calliopeai/zentinelle
@@ -102,7 +102,7 @@ strings:
     compose_exec_backend_python_managepy_migrate: compose exec backend python manage.py migrate
     compose_exec_backend_python_managepy_createsu: compose exec backend python manage.py createsuperuser
     open: open
-    connect_your_agent_proxy_mode_works_with_any: Connect your agent (proxy mode — works with any agent)
+    connect_your_agent_proxy_mode_works_with_any: Connect a compatible agent through the configured proxy endpoint
     export: export
     anthropic_base_urlhttplocalhost8080proxyanthr: ANTHROPIC_BASE_URL=http://localhost:8080/proxy/anthropic/
     openai_base_urlhttplocalhost8080proxyopenai: OPENAI_BASE_URL=http://localhost:8080/proxy/openai/

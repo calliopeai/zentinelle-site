@@ -1,12 +1,12 @@
 baseURL = "https://zentinelle.ai/"
 languageCode = "en-us"
-title = "Zentinelle — Governance, Risk & Compliance for AI Agents"
+title = "Zentinelle AI | Agent policy and observability"
 theme = "zentinelle"
 disableFastRender = true
 
 [params]
   version = "1.3.0"
-  description = "Zentinelle sits between your AI agents and their LLM providers, enforcing policies, scanning content, logging activity, and giving you a real-time GRC portal."
+  description = "Evaluate policy and record activity through supported agent integrations. Review enforcement coverage and evidence for your deployment."
   github = "https://github.com/calliopeai/zentinelle"
   sdk = "https://github.com/calliopeai/zentinelle-sdk"
   docs = "https://zentinelle.dev"
