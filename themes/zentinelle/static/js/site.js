@@ -19,7 +19,16 @@
     var H = 540;
     var COUNT = 85;
     var CONNECT_DIST = 140;
-    var TR = 55, TG = 239, TB = 237;
+    // Colours from the stylesheets: the brand teal (--primary, from
+    // calliope-tokens.css) for the network, the site's white for the cores.
+    var tokens = getComputedStyle(document.documentElement);
+    function tokenRgb(name) {
+      var n = parseInt(tokens.getPropertyValue(name).trim().slice(1), 16);
+      return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+    }
+    var tint = tokenRgb("--primary");
+    var TR = tint[0], TG = tint[1], TB = tint[2];
+    var CORE = tokenRgb("--color-white").join(",");
 
     // ── Generate Z anchor points ────────────────────────────────────────
     function buildZ(cx, cy, w, h, n) {
@@ -219,10 +228,10 @@
         var fa = sp.alpha * Math.sin(sp.t * Math.PI);
         var g = ctx.createRadialGradient(sx, sy, 0, sx, sy, 14);
         g.addColorStop(0, "rgba(" + TR + "," + TG + "," + TB + "," + (fa * 0.45) + ")");
-        g.addColorStop(1, "rgba(0,0,0,0)");
+        g.addColorStop(1, "transparent");
         ctx.beginPath(); ctx.arc(sx, sy, 14, 0, Math.PI * 2); ctx.fillStyle = g; ctx.fill();
         ctx.beginPath(); ctx.arc(sx, sy, 2, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(255,255,255," + fa + ")"; ctx.fill();
+        ctx.fillStyle = "rgba(" + CORE + "," + fa + ")"; ctx.fill();
       }
 
       // ── Draw background particles ─────────────────────────────────
@@ -233,16 +242,16 @@
           var h = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, hr);
           h.addColorStop(0, "rgba(" + TR + "," + TG + "," + TB + "," + (p.alpha * 0.25) + ")");
           h.addColorStop(0.4, "rgba(" + TR + "," + TG + "," + TB + "," + (p.alpha * 0.08) + ")");
-          h.addColorStop(1, "rgba(0,0,0,0)");
+          h.addColorStop(1, "transparent");
           ctx.beginPath(); ctx.arc(p.x, p.y, hr, 0, Math.PI * 2); ctx.fillStyle = h; ctx.fill();
           var c = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 2.5);
-          c.addColorStop(0, "rgba(255,255,255," + (p.alpha * 0.9) + ")");
+          c.addColorStop(0, "rgba(" + CORE + "," + (p.alpha * 0.9) + ")");
           c.addColorStop(0.4, "rgba(" + TR + "," + TG + "," + TB + "," + (p.alpha * 0.7) + ")");
-          c.addColorStop(1, "rgba(0,0,0,0)");
+          c.addColorStop(1, "transparent");
           ctx.beginPath(); ctx.arc(p.x, p.y, p.size * 2.5, 0, Math.PI * 2); ctx.fillStyle = c; ctx.fill();
         }
         ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = p.isNode ? "rgba(255,255,255," + p.alpha + ")" : "rgba(" + TR + "," + TG + "," + TB + "," + p.alpha + ")";
+        ctx.fillStyle = p.isNode ? "rgba(" + CORE + "," + p.alpha + ")" : "rgba(" + TR + "," + TG + "," + TB + "," + p.alpha + ")";
         ctx.fill();
       }
 
@@ -253,17 +262,17 @@
         var hr = p.size * 5 + Math.sin(time * p.flickerSpeed + p.flickerPhase) * p.size;
         var h = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, hr);
         h.addColorStop(0, "rgba(" + TR + "," + TG + "," + TB + "," + (p.alpha * 0.35) + ")");
-        h.addColorStop(1, "rgba(0,0,0,0)");
+        h.addColorStop(1, "transparent");
         ctx.beginPath(); ctx.arc(p.x, p.y, hr, 0, Math.PI * 2); ctx.fillStyle = h; ctx.fill();
         // Core
         var c = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 2);
-        c.addColorStop(0, "rgba(255,255,255," + p.alpha + ")");
+        c.addColorStop(0, "rgba(" + CORE + "," + p.alpha + ")");
         c.addColorStop(0.5, "rgba(" + TR + "," + TG + "," + TB + "," + (p.alpha * 0.8) + ")");
-        c.addColorStop(1, "rgba(0,0,0,0)");
+        c.addColorStop(1, "transparent");
         ctx.beginPath(); ctx.arc(p.x, p.y, p.size * 2, 0, Math.PI * 2); ctx.fillStyle = c; ctx.fill();
         // Dot
         ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(255,255,255," + p.alpha + ")"; ctx.fill();
+        ctx.fillStyle = "rgba(" + CORE + "," + p.alpha + ")"; ctx.fill();
       }
 
       requestAnimationFrame(draw);
@@ -284,7 +293,7 @@
     dot.setAttribute("aria-hidden", "true");
     dot.style.cssText =
       "position:fixed;top:0;left:0;width:8px;height:8px;border-radius:50%;" +
-      "background:#37efed;pointer-events:none;z-index:9999;opacity:0;" +
+      "background:var(--primary);pointer-events:none;z-index:9999;opacity:0;" +
       "translate:-50% -50%;will-change:transform;" +
       "transition:width 0.25s ease, height 0.25s ease, background 0.25s ease, opacity 0.25s ease;";
     document.body.appendChild(dot);
@@ -293,7 +302,7 @@
     ring.setAttribute("aria-hidden", "true");
     ring.style.cssText =
       "position:fixed;top:0;left:0;width:32px;height:32px;border-radius:50%;" +
-      "border:1.5px solid rgba(55,239,237,0.45);pointer-events:none;z-index:9998;opacity:0;" +
+      "border:1.5px solid color-mix(in srgb, var(--primary) 45%, transparent);pointer-events:none;z-index:9998;opacity:0;" +
       "translate:-50% -50%;will-change:transform;" +
       "transition:width 0.25s ease, height 0.25s ease, border-color 0.25s ease, border-width 0.25s ease, opacity 0.25s ease;";
     document.body.appendChild(ring);
@@ -314,18 +323,18 @@
       if (on) {
         dot.style.width = "36px";
         dot.style.height = "36px";
-        dot.style.background = "#37efed";
+        dot.style.background = "var(--primary)";
         dot.style.opacity = "0.15";
-        ring.style.borderColor = "#37efed";
+        ring.style.borderColor = "var(--primary)";
         ring.style.borderWidth = "2px";
         ring.style.width = "42px";
         ring.style.height = "42px";
       } else {
         dot.style.width = "8px";
         dot.style.height = "8px";
-        dot.style.background = "#37efed";
+        dot.style.background = "var(--primary)";
         dot.style.opacity = "1";
-        ring.style.borderColor = "rgba(55,239,237,0.45)";
+        ring.style.borderColor = "color-mix(in srgb, var(--primary) 45%, transparent)";
         ring.style.borderWidth = "1.5px";
         ring.style.width = "32px";
         ring.style.height = "32px";
@@ -371,12 +380,12 @@
     tab.setAttribute("aria-label", "Contact us");
     tab.className =
       "fixed right-0 top-1/2 z-[100] flex items-center gap-[8px] px-[14px] py-[10px] " +
-      "rounded-l-[10px] bg-[#37efed] hover:bg-[#2dd9d7] transition-colors duration-200";
+      "rounded-l-[10px] bg-primary hover:bg-zen-teal-hover transition-colors duration-200";
     tab.style.transform = "translateY(-50%)";
 
     var span = document.createElement("span");
     span.className =
-      "text-[#0b0b19] text-[12px] leading-normal uppercase tracking-widest whitespace-nowrap";
+      "text-primary-foreground text-[12px] leading-normal uppercase tracking-widest whitespace-nowrap";
     span.style.cssText =
       "font-family:var(--font-sora),sans-serif;font-weight:400;writing-mode:vertical-rl;" +
       "transform:rotate(180deg)";
@@ -425,7 +434,7 @@
       "transition:opacity 0.4s cubic-bezier(0.25,0.1,0.25,1), transform 0.4s cubic-bezier(0.25,0.1,0.25,1);";
 
     var card = document.createElement("div");
-    card.className = "bg-[#13131f] border border-white/12 rounded-[16px] p-[28px] flex flex-col gap-[20px] shadow-2xl shadow-black/60";
+    card.className = "bg-zen-modal border border-white/12 rounded-[16px] p-[28px] flex flex-col gap-[20px] shadow-2xl shadow-black/60";
 
     /* Header */
     var headerRow = document.createElement("div");
@@ -437,11 +446,11 @@
     /* badge */
     var badge = document.createElement("div");
     badge.className = "self-start flex items-center gap-[6px] px-[10px] py-[4px] rounded-[200px]";
-    badge.style.cssText = "background:rgba(55,239,237,0.1);border:1px solid rgba(55,239,237,0.2);";
+    badge.style.cssText = "background:color-mix(in srgb, var(--primary) 10%, transparent);border:1px solid color-mix(in srgb, var(--primary) 20%, transparent);";
     badge.innerHTML =
-      '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#37efed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+      '<svg style="stroke:var(--primary)" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
       '<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>' +
-      '<span class="text-[#37efed] text-[11px] uppercase tracking-wide" style="font-family:var(--font-sora), sans-serif;font-weight:400">Let\'s talk</span>';
+      '<span class="text-primary text-[11px] uppercase tracking-wide" style="font-family:var(--font-sora), sans-serif;font-weight:400">Let\'s talk</span>';
     headerLeft.appendChild(badge);
 
     /* headline */
@@ -453,7 +462,7 @@
 
     /* subtitle */
     var subtitle = document.createElement("p");
-    subtitle.className = "text-[#ccccd8] text-[13px] leading-relaxed";
+    subtitle.className = "text-text-secondary text-[13px] leading-relaxed";
     subtitle.style.cssText = "font-family:var(--font-sora), sans-serif;font-weight:300;";
     subtitle.textContent = "Get in touch \u2014 we reply fast.";
     headerLeft.appendChild(subtitle);
@@ -476,11 +485,11 @@
     sentDiv.className = "flex flex-col items-center gap-[12px] py-[16px]";
     sentDiv.style.display = "none";
     sentDiv.innerHTML =
-      '<div class="flex items-center justify-center w-[44px] h-[44px] rounded-full bg-[#37efed]">' +
-      '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#0b0b19" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">' +
+      '<div class="flex items-center justify-center w-[44px] h-[44px] rounded-full bg-primary">' +
+      '<svg style="stroke:var(--primary-foreground)" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">' +
       '<path d="M20 6L9 17l-5-5"/></svg></div>' +
       '<p class="text-white text-[15px] text-center" style="font-family:var(--font-sora), sans-serif;font-weight:700">Message sent!</p>' +
-      '<p class="text-[#ccccd8]/60 text-[13px] text-center" style="font-family:var(--font-sora), sans-serif;font-weight:300">We\'ll get back to you shortly.</p>';
+      '<p class="text-text-secondary/60 text-[13px] text-center" style="font-family:var(--font-sora), sans-serif;font-weight:300">We\'ll get back to you shortly.</p>';
     card.appendChild(sentDiv);
 
     /* form */
@@ -494,7 +503,7 @@
     nameInput.type = "text";
     nameInput.placeholder = "Name";
     nameInput.required = true;
-    nameInput.className = "flex-1 px-[12px] py-[9px] rounded-[8px] text-[13px] bg-white/5 border border-white/10 text-white placeholder:text-white/30 outline-none focus:border-[#37efed]/40 transition-colors";
+    nameInput.className = "flex-1 px-[12px] py-[9px] rounded-[8px] text-[13px] bg-white/5 border border-white/10 text-white placeholder:text-white/30 outline-none focus:border-primary/40 transition-colors";
     nameInput.style.cssText = "font-family:var(--font-sora), sans-serif;";
     inputRow.appendChild(nameInput);
 
@@ -502,7 +511,7 @@
     emailInput.type = "email";
     emailInput.placeholder = "Email";
     emailInput.required = true;
-    emailInput.className = "flex-1 px-[12px] py-[9px] rounded-[8px] text-[13px] bg-white/5 border border-white/10 text-white placeholder:text-white/30 outline-none focus:border-[#37efed]/40 transition-colors";
+    emailInput.className = "flex-1 px-[12px] py-[9px] rounded-[8px] text-[13px] bg-white/5 border border-white/10 text-white placeholder:text-white/30 outline-none focus:border-primary/40 transition-colors";
     emailInput.style.cssText = "font-family:var(--font-sora), sans-serif;";
     inputRow.appendChild(emailInput);
 
@@ -512,7 +521,7 @@
     textarea.rows = 3;
     textarea.placeholder = "Your message\u2026";
     textarea.required = true;
-    textarea.className = "w-full px-[12px] py-[9px] rounded-[8px] text-[13px] bg-white/5 border border-white/10 text-white placeholder:text-white/30 outline-none focus:border-[#37efed]/40 transition-colors resize-none";
+    textarea.className = "w-full px-[12px] py-[9px] rounded-[8px] text-[13px] bg-white/5 border border-white/10 text-white placeholder:text-white/30 outline-none focus:border-primary/40 transition-colors resize-none";
     textarea.style.cssText = "font-family:var(--font-sora), sans-serif;";
     form.appendChild(textarea);
 
@@ -521,7 +530,7 @@
 
     var emailLink = document.createElement("a");
     emailLink.href = "mailto:hello@calliope.ai";
-    emailLink.className = "text-[#ccccd8]/50 text-[12px] hover:text-[#37efed] transition-colors flex items-center gap-[6px]";
+    emailLink.className = "text-text-secondary/50 text-[12px] hover:text-primary transition-colors flex items-center gap-[6px]";
     emailLink.style.cssText = "font-family:var(--font-sora), sans-serif;";
     emailLink.innerHTML =
       '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
@@ -531,7 +540,7 @@
 
     var sendBtn = document.createElement("button");
     sendBtn.type = "submit";
-    sendBtn.className = "flex items-center gap-[8px] px-[16px] py-[9px] rounded-[8px] text-[13px] bg-[#37efed] text-[#0b0b19] hover:bg-white transition-colors disabled:opacity-60 shrink-0";
+    sendBtn.className = "flex items-center gap-[8px] px-[16px] py-[9px] rounded-[8px] text-[13px] bg-primary text-primary-foreground hover:bg-white transition-colors disabled:opacity-60 shrink-0";
     sendBtn.style.cssText = "font-family:var(--font-sora), sans-serif;font-weight:600;";
     sendBtn.textContent = "Send";
     formFooter.appendChild(sendBtn);
@@ -773,7 +782,7 @@
 
           if (isActive) {
             if (span) span.style.fontWeight = "700";
-            link.style.background = "rgba(255,255,255,0.05)";
+            link.style.background = "color-mix(in srgb, var(--color-white) 5%, transparent)";
             link.classList.remove("hover:bg-white/5");
             if (!existingDot && imgDot) {
               var img = document.createElement("img");
@@ -805,7 +814,7 @@
 
         if (startActive) {
           if (span) span.style.fontWeight = "700";
-          link.style.background = "rgba(255,255,255,0.05)";
+          link.style.background = "color-mix(in srgb, var(--color-white) 5%, transparent)";
           link.classList.remove("hover:bg-white/5");
           if (!existingDot && imgDot) {
             var img = document.createElement("img");
@@ -1041,7 +1050,7 @@
       /* Dots */
       for (var i = 0; i < dots.length; i++) {
         dots[i].style.width = (i === active) ? "24px" : "6px";
-        dots[i].style.background = (i === active) ? "#37efed" : "rgba(255,255,255,0.15)";
+        dots[i].style.background = (i === active) ? "var(--primary)" : "color-mix(in srgb, var(--color-white) 15%, transparent)";
       }
 
       /* Progress bar */
@@ -1141,7 +1150,7 @@
 
       for (var i = 0; i < dots.length; i++) {
         dots[i].style.width = (i === active) ? "24px" : "6px";
-        dots[i].style.background = (i === active) ? "rgba(255,255,255,0.5)" : "rgba(255,255,255,0.12)";
+        dots[i].style.background = (i === active) ? "color-mix(in srgb, var(--color-white) 50%, transparent)" : "color-mix(in srgb, var(--color-white) 12%, transparent)";
       }
 
       progressBar.style.width = (((active + 1) / items.length) * 100) + "%";
@@ -1191,13 +1200,13 @@
   function initCopyButtons() {
     var COPY_SVG =
       '<svg width="14" height="14" viewBox="0 0 14 14" fill="none">' +
-      '<rect x="4" y="1" width="8" height="9" rx="1.5" stroke="#0b0b19" stroke-width="1.5"/>' +
-      '<path d="M2 5H1.5A1.5 1.5 0 0 0 0 6.5v6A1.5 1.5 0 0 0 1.5 14H8a1.5 1.5 0 0 0 1.5-1.5V12" stroke="#0b0b19" stroke-width="1.5" stroke-linecap="round"/>' +
+      '<rect style="stroke:var(--primary-foreground)" x="4" y="1" width="8" height="9" rx="1.5" stroke-width="1.5"/>' +
+      '<path style="stroke:var(--primary-foreground)" d="M2 5H1.5A1.5 1.5 0 0 0 0 6.5v6A1.5 1.5 0 0 0 1.5 14H8a1.5 1.5 0 0 0 1.5-1.5V12" stroke-width="1.5" stroke-linecap="round"/>' +
       '</svg>';
 
     var CHECK_SVG =
       '<svg width="14" height="14" viewBox="0 0 14 14" fill="none">' +
-      '<path d="M2.5 7.5L5.5 10.5L11.5 4" stroke="#0b0b19" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>' +
+      '<path style="stroke:var(--primary-foreground)" d="M2.5 7.5L5.5 10.5L11.5 4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>' +
       '</svg>';
 
     var buttons = document.querySelectorAll('button[aria-label="Copy code"]');
@@ -1210,7 +1219,7 @@
         var codeDiv = headerDiv ? headerDiv.nextElementSibling : null;
 
         /* Style the button to match the teal CopyButton.tsx design */
-        btn.style.background = "#37efed";
+        btn.style.background = "var(--primary)";
         btn.style.width = "28px";
         btn.style.height = "28px";
         btn.style.display = "flex";

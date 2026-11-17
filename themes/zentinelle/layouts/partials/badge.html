@@ -13,18 +13,18 @@
 {{- $style := .style -}}
 {{- if not $style -}}
   {{- if eq $variant "hero" -}}
-    {{- $style = "background:rgba(55,239,237,0.1);border:1px solid rgba(55,239,237,0.2)" -}}
+    {{- $style = "background:color-mix(in srgb, var(--primary) 10%, transparent);border:1px solid color-mix(in srgb, var(--primary) 20%, transparent)" -}}
   {{- else if eq $variant "card" -}}
-    {{- $style = "background:rgba(55,239,237,0.08);border:1px solid rgba(55,239,237,0.18)" -}}
+    {{- $style = "background:color-mix(in srgb, var(--primary) 8%, transparent);border:1px solid color-mix(in srgb, var(--primary) 18%, transparent)" -}}
   {{- else -}}
-    {{- $style = "background:rgba(217,217,217,0.1)" -}}
+    {{- $style = "background:color-mix(in srgb, var(--color-zen-chip) 10%, transparent)" -}}
   {{- end -}}
 {{- end -}}
-{{- $spanClass := default "text-[#37efed] text-[12px] leading-normal uppercase" .spanClass -}}
+{{- $spanClass := default "text-primary text-[12px] leading-normal uppercase" .spanClass -}}
 {{- if eq $variant "hero" -}}
-  {{- $spanClass = default "text-[#37efed] text-[12px] leading-normal uppercase tracking-wide" .spanClass -}}
+  {{- $spanClass = default "text-primary text-[12px] leading-normal uppercase tracking-wide" .spanClass -}}
 {{- else if eq $variant "card" -}}
-  {{- $spanClass = default "text-[#37efed]/80 text-[11px] leading-normal uppercase tracking-wide" .spanClass -}}
+  {{- $spanClass = default "text-primary/80 text-[11px] leading-normal uppercase tracking-wide" .spanClass -}}
 {{- end -}}
 {{- $spanStyle := default "font-family:var(--font-sora), sans-serif;font-weight:400" .spanStyle -}}
 <div class="{{ $class }}"{{ with $style }} style="{{ . | safeCSS }}"{{ end }}>

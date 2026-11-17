@@ -9,14 +9,14 @@
   <div class="max-w-7xl mx-auto">
 
     <div style="text-align:center;margin-bottom:24px;">
-      <span style="display:inline-flex;align-items:center;gap:8px;padding:4px 10px;border-radius:999px;border:1px solid rgba(55,239,237,0.4);background:rgba(55,239,237,0.06);color:#37efed;font-size:10px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;font-family:ui-monospace, SFMono-Regular, monospace;margin-bottom:14px;">
-        <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#37efed;animation:demo-pulse 1.6s ease-in-out infinite;box-shadow:0 0 10px #37efed;"></span>
+      <span style="display:inline-flex;align-items:center;gap:8px;padding:4px 10px;border-radius:999px;border:1px solid color-mix(in srgb, var(--primary) 40%, transparent);background:color-mix(in srgb, var(--primary) 6%, transparent);color:var(--primary);font-size:10px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;font-family:ui-monospace, SFMono-Regular, monospace;margin-bottom:14px;">
+        <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--primary);animation:demo-pulse 1.6s ease-in-out infinite;box-shadow:0 0 10px var(--primary);"></span>
         Interactive Demo
       </span>
-      <h1 style="font-size:clamp(28px, 3.5vw, 40px);font-weight:700;letter-spacing:-0.025em;line-height:1.1;color:#fff;margin:0 0 10px 0;">
-        Click around <span style="color:#37efed;">the actual portal</span>.
+      <h1 style="font-size:clamp(28px, 3.5vw, 40px);font-weight:700;letter-spacing:-0.025em;line-height:1.1;color:var(--color-white);margin:0 0 10px 0;">
+        Click around <span style="color:var(--primary);">the actual portal</span>.
       </h1>
-      <p style="font-size:14px;line-height:1.5;color:#9ca3af;max-width:560px;margin:0 auto;">
+      <p style="font-size:14px;line-height:1.5;color:var(--color-zen-muted);max-width:560px;margin:0 auto;">
         Captured from a real Zentinelle instance with seeded data. Pick a page below and explore. No signup, no install.
       </p>
     </div>
@@ -34,7 +34,7 @@
         border-radius: 8px;
         font-size: 13px;
         font-weight: 500;
-        color: #9ca3af;
+        color: var(--color-zen-muted);
         background: transparent;
         border: 1px solid transparent;
         cursor: pointer;
@@ -42,14 +42,14 @@
         white-space: nowrap;
       }
       .demo-tab:hover {
-        color: #fff;
-        background: rgba(255,255,255,0.04);
+        color: var(--color-white);
+        background: color-mix(in srgb, var(--color-white) 4%, transparent);
       }
       .demo-tab.active {
-        color: #0b0b19;
-        background: linear-gradient(180deg, #37efed 0%, #28d4d2 100%);
-        border-color: rgba(55,239,237,0.5);
-        box-shadow: 0 4px 14px -4px rgba(55,239,237,0.4);
+        color: var(--primary-foreground);
+        background: linear-gradient(180deg, var(--primary) 0%, var(--color-zen-teal-deep) 100%);
+        border-color: color-mix(in srgb, var(--primary) 50%, transparent);
+        box-shadow: 0 4px 14px -4px color-mix(in srgb, var(--primary) 40%, transparent);
       }
 
       /* Mobile: aspect ratio is 16:10 desktop, but at narrow widths the
@@ -63,48 +63,48 @@
       }
     </style>
 
-    <div id="zentinelle-demo" class="rounded-2xl overflow-hidden border border-white/10 bg-[#0f0f1e] shadow-2xl shadow-[#37efed]/5">
+    <div id="zentinelle-demo" class="rounded-2xl overflow-hidden border border-white/10 bg-zen-panel shadow-2xl shadow-primary/5">
 
       {{/* Tab strip — one per captured page. Picking a tab swaps iframe src. */}}
-      <div style="display:flex;align-items:center;gap:6px;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.06);background:#0a0a14;overflow-x:auto;scrollbar-width:thin;">
+      <div style="display:flex;align-items:center;gap:6px;padding:10px 12px;border-bottom:1px solid color-mix(in srgb, var(--color-white) 6%, transparent);background:var(--color-zen-demo-frame);overflow-x:auto;scrollbar-width:thin;">
         <div style="display:flex;gap:4px;margin-right:14px;flex-shrink:0;">
-          <span style="width:11px;height:11px;border-radius:50%;background:#ff5f57;"></span>
-          <span style="width:11px;height:11px;border-radius:50%;background:#febc2e;"></span>
-          <span style="width:11px;height:11px;border-radius:50%;background:#28c840;"></span>
+          <span style="width:11px;height:11px;border-radius:50%;background:var(--color-zen-dot-red);"></span>
+          <span style="width:11px;height:11px;border-radius:50%;background:var(--color-zen-dot-amber);"></span>
+          <span style="width:11px;height:11px;border-radius:50%;background:var(--color-zen-dot-green);"></span>
         </div>
         <div id="demo-tabs" style="display:flex;gap:2px;flex:1;"></div>
-        <span id="demo-url" style="margin-left:14px;padding:4px 10px;border-radius:6px;background:rgba(255,255,255,0.04);color:#9ca3af;font-size:11px;font-family:ui-monospace, SFMono-Regular, monospace;flex-shrink:0;">
+        <span id="demo-url" style="margin-left:14px;padding:4px 10px;border-radius:6px;background:color-mix(in srgb, var(--color-white) 4%, transparent);color:var(--color-zen-muted);font-size:11px;font-family:ui-monospace, SFMono-Regular, monospace;flex-shrink:0;">
           zentinelle.local/dashboard
         </span>
       </div>
 
-      <div style="position:relative;aspect-ratio:1440/900;max-height:min(76vh, 760px);width:100%;background:#0b0b19;overflow:hidden;">
+      <div style="position:relative;aspect-ratio:1440/900;max-height:min(76vh, 760px);width:100%;background: var(--sidebar);overflow:hidden;">
         <iframe id="demo-frame" src="/demo/01-dashboard.html"
                 title="Zentinelle live demo"
-                style="position:absolute;inset:0;width:100%;height:100%;border:0;background:#0b0b19;"
+                style="position:absolute;inset:0;width:100%;height:100%;border:0;background: var(--sidebar);"
                 sandbox="allow-same-origin"
                 loading="lazy"></iframe>
 
-        <div id="demo-loader" style="position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(11,11,25,0.7);backdrop-filter:blur(4px);pointer-events:none;">
-          <div style="width:32px;height:32px;border:2px solid rgba(55,239,237,0.2);border-top-color:#37efed;border-radius:50%;animation:demo-spin 0.7s linear infinite;"></div>
+        <div id="demo-loader" style="position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:color-mix(in srgb, var(--sidebar) 70%, transparent);backdrop-filter:blur(4px);pointer-events:none;">
+          <div style="width:32px;height:32px;border:2px solid color-mix(in srgb, var(--primary) 20%, transparent);border-top-color:var(--primary);border-radius:50%;animation:demo-spin 0.7s linear infinite;"></div>
         </div>
 
-        <div style="position:absolute;bottom:12px;right:12px;display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;background:rgba(11,11,25,0.85);border:1px solid rgba(255,255,255,0.08);font-size:10px;color:#9ca3af;font-family:ui-monospace, SFMono-Regular, monospace;letter-spacing:0.04em;pointer-events:none;backdrop-filter:blur(6px);">
-          <span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:#37efed;box-shadow:0 0 8px #37efed;"></span>
+        <div style="position:absolute;bottom:12px;right:12px;display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;background:color-mix(in srgb, var(--sidebar) 85%, transparent);border:1px solid color-mix(in srgb, var(--color-white) 8%, transparent);font-size:10px;color:var(--color-zen-muted);font-family:ui-monospace, SFMono-Regular, monospace;letter-spacing:0.04em;pointer-events:none;backdrop-filter:blur(6px);">
+          <span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--primary);box-shadow:0 0 8px var(--primary);"></span>
           Snapshot · Click freely · ←/→
         </div>
 
-        <div id="demo-mobile-msg" style="display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;text-align:center;background:#0b0b19;">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#37efed" stroke-width="1.5">
+        <div id="demo-mobile-msg" style="display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;text-align:center;background: var(--sidebar);">
+          <svg style="stroke:var(--primary)" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke-width="1.5">
             <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
             <line x1="8" y1="21" x2="16" y2="21"></line>
             <line x1="12" y1="17" x2="12" y2="21"></line>
           </svg>
-          <div style="font-size:14px;font-weight:600;color:#fff;">Best viewed on desktop</div>
-          <div style="font-size:13px;color:#9ca3af;max-width:300px;line-height:1.5;">
+          <div style="font-size:14px;font-weight:600;color:var(--color-white);">Best viewed on desktop</div>
+          <div style="font-size:13px;color:var(--color-zen-muted);max-width:300px;line-height:1.5;">
             The portal is dense — open this page on a wider screen for the full interactive demo.
           </div>
-          <a href="https://github.com/calliopeai/zentinelle" style="margin-top:6px;padding:8px 14px;border-radius:8px;background:#37efed;color:#0b0b19;font-size:12px;font-weight:600;text-decoration:none;">
+          <a href="https://github.com/calliopeai/zentinelle" style="margin-top:6px;padding:8px 14px;border-radius:8px;background:var(--primary);color: var(--primary-foreground);font-size:12px;font-weight:600;text-decoration:none;">
             See on GitHub instead
           </a>
         </div>
@@ -115,12 +115,12 @@
       @keyframes demo-spin { to { transform: rotate(360deg); } }
     </style>
 
-    <div style="margin-top:32px;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:16px;font-size:14px;color:#a8acba;">
-      <a href="https://github.com/calliopeai/zentinelle" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:10px;padding:10px 18px;border-radius:10px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.02);color:#a8acba;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(55,239,237,0.5)';this.style.color='#fff';" onmouseout="this.style.borderColor='rgba(255,255,255,0.12)';this.style.color='#a8acba';">
+    <div style="margin-top:32px;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:16px;font-size:14px;color:var(--color-zen-demo-text);">
+      <a href="https://github.com/calliopeai/zentinelle" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:10px;padding:10px 18px;border-radius:10px;border:1px solid color-mix(in srgb, var(--color-white) 12%, transparent);background:color-mix(in srgb, var(--color-white) 2%, transparent);color:var(--color-zen-demo-text);text-decoration:none;transition:all 0.2s;" onmouseover="this.style.borderColor='color-mix(in srgb, var(--primary) 50%, transparent)';this.style.color='var(--color-white)';" onmouseout="this.style.borderColor='color-mix(in srgb, var(--color-white) 12%, transparent)';this.style.color='var(--color-zen-demo-text)';">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
-        <span>Run it yourself: <code style="color:#fff;background:rgba(55,239,237,0.1);padding:2px 6px;border-radius:4px;font-size:12px;">docker compose up</code></span>
+        <span>Run it yourself: <code style="color:var(--color-white);background:color-mix(in srgb, var(--primary) 10%, transparent);padding:2px 6px;border-radius:4px;font-size:12px;">docker compose up</code></span>
       </a>
-      <a href="/#quick-start" style="color:#37efed;text-decoration:none;font-weight:500;transition:color 0.2s;" onmouseover="this.style.color='#fff';" onmouseout="this.style.color='#37efed';">
+      <a href="/#quick-start" style="color:var(--primary);text-decoration:none;font-weight:500;transition:color 0.2s;" onmouseover="this.style.color='var(--color-white)';" onmouseout="this.style.color='var(--primary)';">
         Read the quick start →
       </a>
     </div>
