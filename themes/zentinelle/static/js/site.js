@@ -23,7 +23,10 @@
     // calliope-tokens.css) for the network, the site's white for the cores.
     var tokens = getComputedStyle(document.documentElement);
     function tokenRgb(name) {
-      var n = parseInt(tokens.getPropertyValue(name).trim().slice(1), 16);
+      var hex = tokens.getPropertyValue(name).trim().slice(1);
+      // compiled.css is minified, so the site's white arrives as #fff.
+      if (hex.length === 3) hex = hex.replace(/./g, "$&$&");
+      var n = parseInt(hex, 16);
       return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
     }
     var tint = tokenRgb("--primary");
