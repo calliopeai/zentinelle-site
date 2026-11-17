@@ -1,0 +1,72 @@
+/* Generated from @calliopelabs/ui@0.23.0 (dist/tokens/brands/zentinelle/plain.css)
+ * by scripts/sync-ui-tokens.mjs.
+ * Zentinelle AI brand, teal accent.
+ * Grounds: black on :root.
+ * sha256:6bb1ec37daab1c94e835d4b5e755d02bf34acbd5a92bf034aed0e21a86804631
+ * Do not edit. Run `node scripts/sync-ui-tokens.mjs <version>` to update. */
+/* Corners, motion and type, on every ground */
+:root {
+  --radius: 2px;
+  --motion-fast: 120ms;
+  --motion-base: 200ms;
+  --motion-slow: 320ms;
+  --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-mono: ui-monospace, "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", monospace;
+  --font-head: ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Dark: black ground, teal accent (#37efed) */
+:root {
+  color-scheme: dark;
+  --background: #000000;
+  --foreground: #f0f2f1;
+  --card: #0a0a0a;
+  --card-foreground: #f0f2f1;
+  --popover: #141414;
+  --popover-foreground: #f0f2f1;
+  --primary: #37efed;
+  --primary-foreground: #0b0b19;
+  --secondary: #161616;
+  --secondary-foreground: #f0f2f1;
+  --muted: #111111;
+  --muted-foreground: #848b88;
+  --accent: #1b1b1b;
+  --accent-foreground: #f0f2f1;
+  --destructive: #ff6b6b;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.1);
+  --ring: #37efed;
+  --chart-1: #37efed;
+  --chart-2: #8fd82a;
+  --chart-3: #cbf39d;
+  --chart-4: #e0b34a;
+  --chart-5: #0b6644;
+  --sidebar: #0b0b19;
+  --sidebar-foreground: #f0f2f1;
+  --sidebar-primary: #37efed;
+  --sidebar-primary-foreground: #0b0b19;
+  --sidebar-accent: rgba(55, 239, 237, 0.16);
+  --sidebar-accent-foreground: #f0f2f1;
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+  --sidebar-ring: #37efed;
+  --sidebar-muted-foreground: #848b88;
+  --surface-0: #000000;
+  --surface-1: #0a0a0a;
+  --surface-2: #141414;
+  --success: #8fd82a;
+  --success-fg: #a6e34d;
+  --success-bg: rgba(143, 216, 42, 0.1);
+  --success-border: rgba(143, 216, 42, 0.35);
+  --warning: #f0c34e;
+  --warning-fg: #f0c34e;
+  --warning-bg: rgba(240, 195, 78, 0.1);
+  --warning-border: rgba(240, 195, 78, 0.35);
+  --info: #2f9e52;
+  --info-fg: #5cbb79;
+  --info-bg: rgba(47, 158, 82, 0.14);
+  --info-border: rgba(47, 158, 82, 0.4);
+  --danger: #ff6b6b;
+  --danger-fg: #ff8a8a;
+  --danger-bg: rgba(255, 107, 107, 0.1);
+  --danger-border: rgba(255, 107, 107, 0.35);
+}
