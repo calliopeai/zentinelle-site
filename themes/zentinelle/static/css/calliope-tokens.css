@@ -1,8 +1,8 @@
-/* Generated from @calliopelabs/ui@0.21.0 (dist/tokens/plain.css,
- * dist/css/tokens.css) by scripts/sync-ui-tokens.mjs.
+/* Generated from @calliopelabs/ui@0.23.0 (dist/tokens/brands/zentinelle/plain.css)
+ * by scripts/sync-ui-tokens.mjs.
  * Zentinelle AI brand, teal accent.
  * Grounds: black on :root.
- * sha256:69ff4f17d272133dd213617c5ac56743f713071cab85eacf8fb51041b08828c0
+ * sha256:6bb1ec37daab1c94e835d4b5e755d02bf34acbd5a92bf034aed0e21a86804631
  * Do not edit. Run `node scripts/sync-ui-tokens.mjs <version>` to update. */
 /* Corners, motion and type, on every ground */
 :root {
@@ -10,9 +10,9 @@
   --motion-fast: 120ms;
   --motion-base: 200ms;
   --motion-slow: 320ms;
-  --font-sans: var(--font-plex-sans, "IBM Plex Sans"), system-ui, sans-serif;
-  --font-mono: var(--font-plex-mono, "IBM Plex Mono"), ui-monospace, SFMono-Regular, Menlo, monospace;
-  --font-head: var(--font-dm-sans, "DM Sans"), system-ui, sans-serif;
+  --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-mono: ui-monospace, "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", monospace;
+  --font-head: ui-sans-serif, system-ui, sans-serif;
 }
 
 /* Dark: black ground, teal accent (#37efed) */

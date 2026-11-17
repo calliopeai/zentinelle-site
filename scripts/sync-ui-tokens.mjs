@@ -4,7 +4,12 @@
 // brand and grounds in CONFIG, each ground under the selector this site
 // already uses for that mode.
 //
-// plain.css carries the family accents only. When the brand's accent is a
+// From 0.23.0 a brand with its own look ships its own plain.css
+// (dist/tokens/brands/<product>/plain.css): its grounds, its accents, its faces
+// and its corners. When the release has one for CONFIG.product, every value
+// comes from that file.
+//
+// The family plain.css carries the family accents only. When the brand's accent is a
 // product's own (Zentinelle teal, Workbench blue, ...), its two colours are
 // read from the same release's dist/css/tokens.css and put in the tokens a
 // product accent moves: primary, ring, chart-1, the sidebar primary and ring,
@@ -33,13 +38,16 @@ const CONFIG = {
   product: "zentinelle",
   // A family accent (green, copper, ice, periwinkle, amber) or the product's own.
   accent: "teal",
+  // Read the brand's own plain.css (dist/tokens/brands/<product>/plain.css,
+  // @calliopelabs/ui 0.23.0 and later) in place of the family one.
+  own: true,
   // Each ground the site paints, the selector that paints it, and an
   // optional media query around the rule.
   grounds: [{ ground: "black", selector: ":root" }],
 };
 
 const FAMILY = ["green", "copper", "ice", "periwinkle", "amber"];
-const LIGHT = ["paper", "mist"];
+const SOURCE = CONFIG.own ? `dist/tokens/brands/${CONFIG.product}/plain.css` : "dist/tokens/plain.css";
 const SHARED = /^--(radius|motion-|font-)/;
 const ON_PRIMARY = ["--primary", "--ring", "--chart-1", "--sidebar-primary", "--sidebar-ring"];
 const ON_INK = ["--primary-foreground", "--sidebar-primary-foreground"];
@@ -65,10 +73,10 @@ function rgb(hex) {
 
 /** One ground with the brand's accent, as concrete values. */
 function ground(plain, tokens, { ground: name }) {
-  const mode = LIGHT.includes(name) ? "light" : "dark";
   const vars = new Map([...block(plain, `[data-ground="${name}"]`)]);
+  const mode = vars.get("color-scheme") === "light" ? "light" : "dark";
   let primary;
-  if (FAMILY.includes(CONFIG.accent)) {
+  if (CONFIG.own || FAMILY.includes(CONFIG.accent)) {
     for (const [k, v] of block(plain, `[data-ground="${name}"][data-accent="${CONFIG.accent}"]`)) vars.set(k, v);
     primary = vars.get("--primary");
   } else {
@@ -83,7 +91,7 @@ function ground(plain, tokens, { ground: name }) {
     const alpha = tint.exec(vars.get("--sidebar-accent"))?.[1];
     if (alpha) vars.set("--sidebar-accent", `rgba(${rgb(primary).join(", ")}, ${alpha})`);
   }
-  if (CONFIG.product) {
+  if (CONFIG.product && !CONFIG.own) {
     const layer = block(tokens, `[data-mode="${mode}"][data-ground="${name}"]`).get("--sidebar") ?? "";
     const slot = /^var\((--brand-sidebar(?:-light)?),/.exec(layer)?.[1];
     const own = slot && block(tokens, `[data-product="${CONFIG.product}"]`).get(slot);
@@ -108,8 +116,8 @@ function header(version, sha) {
     .map((g) => `${g.ground} on ${g.selector}${g.media ? ` in @media ${g.media}` : ""}`)
     .join("; ");
   return (
-    `/* Generated from @calliopelabs/ui@${version} (dist/tokens/plain.css,\n` +
-    ` * dist/css/tokens.css) by scripts/sync-ui-tokens.mjs.\n` +
+    `/* Generated from @calliopelabs/ui@${version} ${CONFIG.own ? `(${SOURCE})\n *` : `(${SOURCE},\n * dist/css/tokens.css)`}` +
+    ` by scripts/sync-ui-tokens.mjs.\n` +
     ` * ${CONFIG.brand}, ${CONFIG.accent} accent.\n` +
     ` * Grounds: ${grounds}.\n` +
     ` * sha256:${sha}\n` +
@@ -146,10 +154,10 @@ try {
     join(tmp, `calliopelabs-ui-${version}.tgz`),
     "-C",
     tmp,
-    "package/dist/tokens/plain.css",
+    `package/${SOURCE}`,
     "package/dist/css/tokens.css",
   ]);
-  const plain = readFileSync(join(tmp, "package/dist/tokens/plain.css"), "utf8");
+  const plain = readFileSync(join(tmp, `package/${SOURCE}`), "utf8");
   const tokens = readFileSync(join(tmp, "package/dist/css/tokens.css"), "utf8");
   const shared = new Map([...block(plain, ":root")].filter(([k]) => SHARED.test(k)));
   const parts = ["/* Corners, motion and type, on every ground */\n" + rule(":root", shared)];

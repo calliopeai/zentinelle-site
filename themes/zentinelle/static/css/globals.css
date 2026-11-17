@@ -168,7 +168,9 @@ html {
 
 /* From calliope-tokens.css, the Zentinelle AI brand: the teal accent
    (--primary), the ink on it (--primary-foreground) and the brand navy
-   (--sidebar), which is the page colour today. */
+   (--sidebar), which is the page colour today. The brand's faces,
+   --font-sans and --font-mono (Tailwind's own stacks), reach the page root
+   and code through Tailwind's defaults. */
 @theme inline {
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
@@ -206,13 +208,6 @@ html {
   --color-zen-dot-red: #ff5f57;
   --color-zen-dot-amber: #febc2e;
   --color-zen-dot-green: #28c840;
-}
-
-/* Tailwind's own stacks for the page root and code, as before; the tokens'
-   --font-sans and --font-mono would otherwise reach them. */
-@theme {
-  --default-font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --default-mono-font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
 /* The site has never declared a colour scheme; the tokens' `color-scheme:
